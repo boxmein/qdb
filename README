@@ -1,0 +1,24 @@
+# qdb #
+
+Quote Database Engine in Ruby / Sinatra
+
+
+## Running
+
+Here's the long and *utterly* tedious process you need to pass to get this up
+and running:
+
+```ruby
+bundle install
+ruby app.rb
+```
+
+## Features
+
+* Quote management
+* Moderation roles
+*
+
+## Credit
+
+(c) boxmein 2015, blah blah MIT license
