@@ -1,50 +1,52 @@
 require 'sinatra'
 require 'sinatra/activerecord'
-require './config/environments'
+require './config/env'
 
-set(:auth) do |*roles|
-  condition do
-    unless logged_in? && roles.any? {|role| }
-
-end
+# wow models
+require './models/Quote'
 
 # Quote display options, intro text
 get '/' do
-
+  erb :index
 end
 
 # Get which quote?
 get '/quote/:id' do
-  "Hello #{params[:id]}"
+  erb :quote, locals: { id: params[:id] }
 end
 
 # Post a new quote, returns link to quote
-post '/quote/new', :auth => [:post_comments] do
-  "New quote:"
-end
+post '/quote/new' do
+  q = params[:quote]
+  puts "New quote by " + q[:author]
+  puts q[:quote]
 
-# Post a quote with ID :id and KeyID :keyid - allows quotes to be overridden
-put '/quote/:id', :auth => [:post_comments] do
+  mdl = Quote.new q
 
-end
-
-# Delete a quote
-delete '/quote/:id', :auth => [:post_comments] do
-
+  if mdl.save
+    redirect '/quotes/'
+  else
+    "Errors & stuff :("
+  end
 end
 
 # Get a list of ~10 quotes
-get '/quotes/:sortby' do
-
+get '/quotes/' do
+  @quotes = Quote.all
+  erb :quotes
 end
 
+# Edit a quote by ID
+put '/quote/:id' do end
 
-# Moderator queue
-get '/modlog', :auth => [:approve_comments] do
+# Delete a quote
+delete '/quote/:id' do end
 
-end
+# Get a list of quotes with a sort-by action
+get '/quotes/:sortby' do end
 
+# Moderator activity log
+get '/modlog' do end
 
-get // do
-  redirect '/404/'
-end
+# Moderation queue
+get '/modq' do end
