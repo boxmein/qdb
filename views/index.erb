@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>index</title>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">home</a> /
+      <a href="/quotes/">quotes</a>
+        (<a href="/quotes/random">random</a>,
+        <a href="/quotes/top100">top 100</a>,
+        <a href="/quotes/voted">by votes</a>) /
+      <a href="/modlog/">moderation log</a> /
+      <a href="/add">add quote</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>#powder Quote Database (qdb)</h1>
+
+    <p>Here's a bunch of IRC quotes from the freenode IRC channel #powder. Click
+    on links above to navigate.</p>
+
+    <form method="POST" action="/quote/new">
+      <input type="text" name="quote[author]" placeholder="Quote Author" />
+      <textarea name="quote[quote]" placeholder="Quote itself..."></textarea>
+      <input type="submit">
+    </form>
+  </main>
+</body>
+</html>
