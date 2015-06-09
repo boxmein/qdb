@@ -10,14 +10,26 @@ and running:
 
 ```ruby
 bundle install
-ruby app.rb
+ruby qdb.rb
 ```
+
+
+## Dev environment
+
+Here's a quick dev environment: run `vagrant up`.
+
+
+## Contributing
+
+Send a pull request, yo
+
+
 
 ## Features
 
-* Quote management
-* Moderation roles
-*
+- TODO: User accounts with permission grabs (eg add_quote, moderate_quote)
+- TODO: Moderation UI with public modlog
+- TODO: Voting (captchas)
 
 ## Credit
 
