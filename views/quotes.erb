@@ -1,33 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>index</title>
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="/">home</a> /
-      <a href="/quotes/">quotes</a>
-        (<a href="/quotes/random">random</a>,
-        <a href="/quotes/top100">top 100</a>,
-        <a href="/quotes/voted">by votes</a>) /
-      <a href="/modlog/">moderation log</a> /
-      <a href="/add">add quote</a>
-    </nav>
-  </header>
+<h1>#powder Quote Database (qdb)</h1>
 
-  <main>
-    <h1>#powder Quote Database (qdb)</h1>
-
-    <div class="quotes">
-      <% @quotes.each do |q| %>
-      <div class="quote">
-        <span class="author"> <%= q.author %> </span>
-        <div class="quote"> <%= q.quote %> </div>
-      </div>
-      <% end %>
-    </div>
-  </main>
-</body>
-</html>
+<div class="quotes">
+  <% @quotes.each do |q| %>
+  <div class="quote">
+    <h4>Quote #<%=q.id%> by <%=q.author%></h4>
+    <div class="quote"> <%= q.quote %> </div>
+  </div>
+  <% end %>
+</div>

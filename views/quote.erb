@@ -1,0 +1,13 @@
+<div class="quote">
+  <h4>Quote #<%=@quote.id%> by <%=@quote.author%></h4>
+  <div class="quote"> <%= @quote.quote %> </div>
+
+  <% if @loggedIn %>
+    <% if @userFlags[:edit_quotes] %>
+      <a href="/quote/<%= quote.id %>/edit">(edit)</a>
+    <% end %>
+    <% if @userFlags[:delete_quotes] %>
+      <a href="/quote/<%= quote.id %>/delete">(delete)</a>
+    <% end %>
+  <% end %>
+</div>
