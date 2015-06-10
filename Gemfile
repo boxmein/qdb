@@ -3,3 +3,4 @@ gem "sinatra"
 gem "activerecord"
 gem "sinatra-activerecord"
 gem "pg"
+gem 'bcrypt-ruby', '~> 3.0.0'
