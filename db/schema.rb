@@ -11,14 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150610212107) do
+ActiveRecord::Schema.define(version: 20150610233623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "quotes", force: :cascade do |t|
-    t.string "author"
-    t.string "quote"
+    t.string  "author"
+    t.string  "quote"
+    t.boolean "approved", default: false
   end
 
   add_index "quotes", ["id"], name: "index_quotes_on_id", using: :btree
