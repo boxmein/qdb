@@ -269,12 +269,6 @@ post '/set_flags/:user', :auth => [:set_flags] do
   end
 end
 
-# Moderator activity log
-
-get '/modlog' do
-
-end
-
 # Moderation queue
 get '/modq', :auth => [:approve_quotes] do
 
