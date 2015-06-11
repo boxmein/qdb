@@ -79,7 +79,8 @@ end
 get '/quote/:id' do
   @quote = Quote.where(:id => params[:id].to_i).first
 
-  if @quote
+  if (@quote && @quote.approved) or
+     (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
     erb :quote
   else
     erb :error, locals: { message: "No such quote!" }
@@ -93,7 +94,7 @@ end
 
 # Get a list of ~10 quotes
 get '/quotes/' do
-  @quotes = Quote.all
+  @quotes = Quote.where(:approved => true)
   erb :quotes
 end
 
@@ -248,6 +249,20 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
   end
 end
 
+post '/quote/:id/approve', :auth => [:approve_quotes] do
+  quote = Quote.find(params[:id].to_i)
+  if quote
+    quote.approved = true
+    if quote.save
+      erb "<h2> Successfully saved quote #{params[:id]}! </h2>"
+    else
+      erb :error, locals: {message: "Error saving quote!" }
+    end
+  else
+    erb :error, locals: {message: "No such quote!"}
+  end
+end
+
 
 #
 # Managing moderators
@@ -285,5 +300,10 @@ end
 
 # Moderation queue
 get '/modq', :auth => [:approve_quotes] do
-
+  @quotes = Quote.where(:approved => false)
+  if @quotes
+    erb :modq
+  else
+    erb :error, locals: {message: "Moderation queue clear. :D"}
+  end
 end
