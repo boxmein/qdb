@@ -1,5 +1,51 @@
 <h2>Set Flags</h2>
+<div class="flagSetter">
+  <div class="row">
+    <input name="post_quotes" data-flag="1" class="flag-tick" type="checkbox" checked>
+    <label for="post_quotes">post quotes</label>
+  </div>
+  <div class="row">
+    <input name="edit_quotes" data-flag="2" class="flag-tick" type="checkbox" checked>
+    <label for="edit_quotes">edit quotes</label>
+  </div>
+  <div class="row">
+    <input name="delete_quotes" data-flag="4" class="flag-tick" type="checkbox" checked>
+    <label for="delete_quotes">delete quotes</label>
+  </div>
+  <div class="row">
+    <input name="list_users" data-flag="8" class="flag-tick" type="checkbox" checked>
+    <label for="list_users">list users</label>
+  </div>
+  <div class="row">
+    <input name="approve_quotes" data-flag="16" class="flag-tick" type="checkbox" checked>
+    <label for="approve_quotes">approve quotes</label>
+  </div>
+  <div class="row">
+    <input data-flag="32" class="flag-tick" type="checkbox" checked>
+    <label for="set_flags">set flags</label>
+  </div>
+</div>
 <form method="POST" action="/set_flags/<%= @user %>">
-  <input type="number" name="flags" value="63">
+  <input id="flags" type="number" name="flags" value="63">
   <input type="submit">
 </form>
+
+<script>
+  // Tiny flag ticker script
+  window.addEventListener('load', function() {
+    'use strict';
+    $('.flag-tick').click(function(evt) {
+      var evtFlag = Number(evt.target.getAttribute('data-flag'));
+      var currFlags = $('#flags').val();
+      if (!isNaN(evtFlag)) {
+        if (evt.target.checked) {
+          currFlags |= evtFlag;
+        } else {
+          currFlags &= ~evtFlag;
+        }
+
+        $('#flags').val(currFlags);
+      }
+    });
+  });
+</script>
