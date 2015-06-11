@@ -98,7 +98,8 @@ end
 
 # Get a list of ~10 quotes
 get '/quotes/' do
-  @quotes = Quote.where(:approved => true)
+  page = params[:page] == 0 ? 1 : params[:page]
+  @quotes = Quote.where(:approved => true).page(params[:page])
   erb :quotes
 end
 
@@ -273,7 +274,8 @@ end
 #
 
 get '/list_users', :auth => [:list_users] do
-  @users = User.all
+  page = params[:page] == 0 ? 1 : params[:page]
+  @users = User.all.page(page)
   erb :users
 end
 
