@@ -1,0 +1,14 @@
+// global variables for the styles
+
+@font-face {
+    font-family: 'Bitstream Vera Sans Mono';
+    src: url('VeraMono/VeraMono-webfont.eot');
+    src: url('VeraMono/VeraMono-webfont.eot?#iefix') format('embedded-opentype'),
+         url('VeraMono/VeraMono-webfont.woff') format('woff'),
+         url('VeraMono/VeraMono-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+$quoteFont: "Bitstream Vera Sans Mono", monospace;
+

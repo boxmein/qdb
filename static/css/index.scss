@@ -1,0 +1,57 @@
+// Base styles
+// sass index.scss index.css
+@import "_global";
+
+
+.quote {
+  font-family: $quoteFont;
+}
+
+textarea.quote {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  font-family: $quoteFont;
+}
+
+// Add Quote UI
+.add_quote {
+  max-width: 500px;
+}
+
+.add_quote input {
+  display: block;
+  width: 100%;
+}
+
+// List Users UI
+.users .user > .name, .users .user > .flags {
+  display: inline-block;
+}
+
+// Overriding Bootstrap crap
+.navbar {
+  min-height: 20px;
+}
+
+.navbar .navbar-brand {
+  padding: 5px;
+  line-height: 20px;
+  height: 30px;
+}
+
+.navbar .navbar-nav > li > a {
+  line-height: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.navbar .navbar-text {
+  margin: 0;
+  padding: 5px;
+  line-height: 20px;
+}
+
+.quote {
+  max-width: 600px;
+}
