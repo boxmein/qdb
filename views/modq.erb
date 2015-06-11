@@ -1,0 +1,14 @@
+<h2>Moderation Queue</h2>
+
+<div class="quotes">
+  <% @quotes.each do |quote| %>
+  <div class="quote">
+    <h4>Quote #<%=quote.id%> by <%=quote.author%></h4>
+    <div class="approved">Approved: <%= quote.approved %></div>
+    <div class="quote"> <%= quote.quote %> </div>
+    <form method="POST" action="/quote/<%=quote.id%>/approve">
+      <input type="submit" value="Approve">
+    </form>
+  </div>
+  <% end %>
+</div>
