@@ -74,6 +74,12 @@ before do
   end
 end
 
+helpers do
+  def esc text
+    Rack::Utils.escape_html text
+  end
+end
+
 
 #
 # Viewing quotes
