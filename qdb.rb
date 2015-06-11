@@ -81,6 +81,7 @@ end
 
 # Get which quote?
 get '/quote/:id' do
+  pass if params[:id] == 'new'
   @quote = Quote.where(:id => params[:id].to_i).first
 
   if (@quote && @quote.approved) or
@@ -146,6 +147,7 @@ get '/register' do
 end
 
 post '/register' do
+
   unless params[:user] and params[:user][:name] and params[:user][:password]
     erb :error, locals: {message: 'Invalid request body!'}
   end
@@ -179,10 +181,15 @@ end
 # Managing quotes
 #
 
+get '/quote/new', :auth => [:post_quotes] do
+  erb :add_quote
+end
+
 # Post a new quote, returns link to quote
 post '/quote/new', :auth => [:post_quotes] do
   q = params[:quote]
 
+  q[:quote]  = esc(q[:quote])
   q[:author] = session[:username]
 
   mdl = Quote.new q
