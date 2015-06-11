@@ -8,8 +8,6 @@ require 'bcrypt'
 require './models/Quote'
 require './models/User'
 
-
-
 configure do
   enable :sessions
 
@@ -38,6 +36,18 @@ configure do
       redirect '/login' unless allowed
     end
   end
+
+  # Open a new file for moderation action logging
+  $moderationLog = File.new './log/moderation.log', 'a'
+  $moderationLog.sync = true
+
+  def logModAction(name, action, on)
+    time = DateTime.now.iso8601
+    $moderationLog.puts "time=#{time} name=#{name} action=#{action} on=#{on}"
+  end
+
+  set :logModAction, lambda { |name, act, on| logModAction(name, act, on) }
+
 end
 
 before do
@@ -172,6 +182,7 @@ post '/quote/new', :auth => [:post_quotes] do
   mdl = Quote.new q
 
   if mdl.save
+    logModAction(session[:username], ":post_quotes", mdl[:id])
     redirect '/quotes/'
   else
     erb :error, locals: { message: "Error saving the quote!" }
@@ -203,6 +214,7 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
     quote.author = params[:author]
     quote.quote  = params[:quote]
     if mdl.save
+      logModAction(session[:username], ":edit_quotes", params[:id].to_i)
       redirect "/quote/#{params[:id]}"
     else
       erb :error, locals: { message: "Error saving quote!" }
@@ -228,6 +240,7 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
   quote = Quote.find(params[:id].to_i)
 
   if quote
+    logModAction(session[:username], ":delete_quotes", params[:id].to_i)
     quote.destroy
     erb "<h2> Destroyed quote #{params[:id]} successfully. </h2>"
   else
@@ -260,6 +273,7 @@ post '/set_flags/:user', :auth => [:set_flags] do
   if user
     user[:flags] = params[:flags].to_i
     if user.save
+      logModAction(session[:username], ":set_flags", params[:user] + " -> " + user[:flags])
       erb "<h2> Successfully saved new flags #{user[:flags]} to user #{user[:name]}"
     else
       erb :error, locals: {message: "Error saving user!"}
@@ -273,6 +287,3 @@ end
 get '/modq', :auth => [:approve_quotes] do
 
 end
-
-
-
