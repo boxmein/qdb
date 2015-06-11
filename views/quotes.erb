@@ -3,7 +3,7 @@
 <div class="quotes">
   <% @quotes.each do |q| %>
   <div class="quote">
-    <h4>Quote #<%=q.id%> by <%=q.author%></h4>
+    <h4>Quote <a href="/quote/<%=q.id%>">#<%=q.id%></a> by <%=q.author%></h4>
     <div class="quote"> <%= q.quote %> </div>
   </div>
   <% end %>
