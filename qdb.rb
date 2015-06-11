@@ -312,7 +312,7 @@ post '/set_flags/:user', :auth => [:set_flags] do
   if user
     user[:flags] = params[:flags].to_i
     if user.save
-      logModAction(session[:username], ":set_flags", params[:user] + " -> " + user[:flags])
+      logModAction(session[:username], ":set_flags","#{params[:user]} -> #{user[:flags]}")
       erb "<h2> Successfully saved new flags #{user[:flags]} to user #{user[:name]}"
     else
       erb :error, locals: {message: "Error saving user!"}
