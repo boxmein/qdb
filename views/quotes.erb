@@ -2,9 +2,11 @@
 
 <div class="quotes">
   <% @quotes.each do |q| %>
-  <div class="quote">
+  <div class="quote well">
     <h4>Quote <a href="/quote/<%=q.id%>">#<%=q.id%></a> by <%=q.author%></h4>
-    <div class="quote"> <%= q.quote %> </div>
+    <div class="quote"> <%= esc q.quote %> </div>
   </div>
   <% end %>
+
+  <% will_paginate @quotes unless @quotes.empty? %>
 </div>
