@@ -2,3 +2,8 @@
 .vagrant
 # Anything under log
 log/*.log
+# Sass files
+static/css/.sass-cache
+*.css
+*.scssc
+*.map
