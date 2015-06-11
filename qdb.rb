@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require './config/env'
-
+require 'sinatra/recaptcha'
 require 'bcrypt'
 
 # wow models
@@ -35,6 +35,10 @@ configure do
       end
       redirect '/login' unless allowed
     end
+
+    Sinatra::ReCaptcha.public_key = "6LeTMwgTAAAAAGbcCK0A3l-oKsqeHvvgzyuVO6Yz"
+    abort "Set $RECAPTCHA_SECRET to your recaptcha secret!" unless ENV['RECAPTCHA_SECRET']
+    Sinatra::ReCaptcha.private_key = ENV['RECAPTCHA_SECRET']
   end
 
   # Open a new file for moderation action logging
@@ -142,21 +146,21 @@ end
 
 post '/register' do
   unless params[:user] and params[:user][:name] and params[:user][:password]
-    erb :error, locals: {message: "Invalid request body!"}
+    erb :error, locals: {message: 'Invalid request body!'}
   end
 
-  puts "Creating new user with details:"
+  erb :error, locals: {message: "Recaptcha failed :o"} unless recaptcha_correct?
+
+  puts 'Creating new user with details:'
   p params[:user]
 
-  # TODO: disable users setting their own flags
   params[:user][:flags] = 0
-  # params[:user][:flags] = params[:user][:flags].to_i
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
   user = User.new params[:user]
 
   if user.save
-    puts "Success!"
+    puts 'Success!'
     erb "<h2>Successfully registered with username #{params[:user][:name]}!</h2>"
   else
     puts "Failure!"
