@@ -1,8 +1,14 @@
 <div class="users">
   <% @users.each do |user| %>
   <div class="user">
-    <div class="name"><%= user.name %></div>
-    <div class="flags"><%= user.flags %></div>
+    <div class="name">Username: <%= user.name %></div>
+    <div class="flags">Flags: <%= user.flags %>
+    <% if @userFlags.include? :set_flags %>
+      <a href="/set_flags/<%= user.name %>">(set)</a>
+    <% end %>
+    </div>
   </div>
   <% end %>
+
+  <% will_paginate @users unless @users.empty? %>
 </div>
