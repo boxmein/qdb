@@ -1,6 +1,6 @@
-<div class="quote">
+<div class="quote well">
   <h4>Quote #<%=@quote.id%> by <%=@quote.author%></h4>
-  <div class="quote"> <%= @quote.quote %> </div>
+  <div class="quote"> <%= esc @quote.quote %> </div>
 
   <% if @loggedIn %>
     <% if @userFlags.include?(:edit_quotes) %>
