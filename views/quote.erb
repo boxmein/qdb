@@ -3,11 +3,11 @@
   <div class="quote"> <%= @quote.quote %> </div>
 
   <% if @loggedIn %>
-    <% if @userFlags[:edit_quotes] %>
-      <a href="/quote/<%= quote.id %>/edit">(edit)</a>
+    <% if @userFlags.include?(:edit_quotes) %>
+      <a href="/quote/<%= @quote.id %>/edit">(edit)</a>
     <% end %>
-    <% if @userFlags[:delete_quotes] %>
-      <a href="/quote/<%= quote.id %>/delete">(delete)</a>
+    <% if @userFlags.include?(:delete_quotes) %>
+      <a href="/quote/<%= @quote.id %>/delete">(delete)</a>
     <% end %>
   <% end %>
 </div>
