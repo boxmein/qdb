@@ -1,2 +1,4 @@
 *.lock
 .vagrant
+# Anything under log
+log/*.log
