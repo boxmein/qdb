@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'will_paginate'
+require 'will_paginate/active_record'
 require './config/env'
 require 'sinatra/recaptcha'
 require 'bcrypt'
@@ -52,6 +54,9 @@ configure do
 
   set :logModAction, lambda { |name, act, on| logModAction(name, act, on) }
 
+  set :public_folder, File.dirname(__FILE__) + '/static'
+
+  set :recaptcha_secret, ENV['RECAPTCHA_SECRET']
 end
 
 before do
@@ -166,7 +171,7 @@ post '/register' do
     puts 'Success!'
     erb "<h2>Successfully registered with username #{params[:user][:name]}!</h2>"
   else
-    puts "Failure!"
+    puts 'Failure!'
     erb :error, locals: {message: "Error saving your user!"}
   end
 end
