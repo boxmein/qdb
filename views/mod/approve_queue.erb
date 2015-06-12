@@ -6,15 +6,15 @@
     <h4>Quote #<%=quote.id%> by <%=quote.author%></h4>
     <div class="approved">Approved: <%= quote.approved %></div>
     <div class="actual-quote"> <%= quote.quote %> </div>
+    <form class="form-inline" style="display: inline-block" method="POST" action="/quote/<%=quote.id%>/approve">
+      <input type="submit" class="btn btn-primary" value="Approve">
+    </form>
     <% if @userFlags.include?(:edit_quotes) %>
-      <a href="/quote/<%= quote.id %>/edit">(edit)</a>
+      <a class="btn btn-info" href="/quote/<%= quote.id %>/edit">edit</a>
     <% end %>
     <% if @userFlags.include?(:delete_quotes) %>
-      <a href="/quote/<%= quote.id %>/delete">(delete)</a>
+      <a class="btn btn-danger" href="/quote/<%= quote.id %>/delete">delete</a>
     <% end %>
-    <form method="POST" action="/quote/<%=quote.id%>/approve">
-      <input type="submit" value="Approve">
-    </form>
   </div>
   <% end %>
 </div>
