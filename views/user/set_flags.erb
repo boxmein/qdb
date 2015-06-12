@@ -1,37 +1,49 @@
-<h2>Set Flags</h2>
-<div class="flagSetter">
+<div class="well">
+
+  <h2>Set Flags on the user <%= @username %> #<%= @id %></h2>
+  <br />
   <div class="row">
-    <input name="post_quotes" data-flag="1" class="flag-tick" type="checkbox" checked>
-    <label for="post_quotes">post quotes</label>
-  </div>
-  <div class="row">
-    <input name="edit_quotes" data-flag="2" class="flag-tick" type="checkbox" checked>
-    <label for="edit_quotes">edit quotes</label>
-  </div>
-  <div class="row">
-    <input name="delete_quotes" data-flag="4" class="flag-tick" type="checkbox" checked>
-    <label for="delete_quotes">delete quotes</label>
-  </div>
-  <div class="row">
-    <input name="list_users" data-flag="8" class="flag-tick" type="checkbox" checked>
-    <label for="list_users">list users</label>
-  </div>
-  <div class="row">
-    <input name="approve_quotes" data-flag="16" class="flag-tick" type="checkbox" checked>
-    <label for="approve_quotes">approve quotes</label>
-  </div>
-  <div class="row">
-    <input data-flag="32" class="flag-tick" type="checkbox" checked>
-    <label for="set_flags">set flags</label>
+    <div class="col-md-6">
+      <form method="POST" action="/user/<%= @id %>/set_flags">
+        <input id="flags" type="number" name="flags" value="0">
+        <input type="submit" class="btn btn-primary btn-large">
+      </form>
+    </div>
+    <div class="col-md-6">
+      <div class="row">
+        <input name="post_quotes" data-flag="1" class="flag-tick" type="checkbox">
+        <label for="post_quotes">post quotes</label>
+      </div>
+      <div class="row">
+        <input name="edit_quotes" data-flag="2" class="flag-tick" type="checkbox">
+        <label for="edit_quotes">edit quotes</label>
+      </div>
+      <div class="row">
+        <input name="delete_quotes" data-flag="4" class="flag-tick" type="checkbox">
+        <label for="delete_quotes">delete quotes</label>
+      </div>
+      <div class="row">
+        <input name="list_users" data-flag="8" class="flag-tick" type="checkbox">
+        <label for="list_users">list users</label>
+      </div>
+      <div class="row">
+        <input name="approve_quotes" data-flag="16" class="flag-tick" type="checkbox">
+        <label for="approve_quotes">approve quotes</label>
+      </div>
+      <div class="row">
+        <input name="set_flags" data-flag="32" class="flag-tick" type="checkbox">
+        <label for="set_flags">set flags</label>
+      </div>
+      <div class="row">
+        <input name="edit_users" data-flag="64" class="flag-tick" type="checkbox">
+        <label for="edit_users">edit users</label>
+      </div>
+    </div>
   </div>
 </div>
-<form method="POST" action="/user/<%= @user %>/set_flags">
-  <input id="flags" type="number" name="flags" value="63">
-  <input type="submit">
-</form>
 
+<!-- I don't think I can add sections like Jade... -->
 <script>
-  // Tiny flag ticker script
   window.addEventListener('load', function() {
     'use strict';
     $('.flag-tick').click(function(evt) {
