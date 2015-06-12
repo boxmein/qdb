@@ -85,9 +85,8 @@ before do
 end
 
 helpers do
-  def esc text
-    Rack::Utils.escape_html text
-  end
+  include Rack::Utils
+  alias_method :esc, :escape_html
 end
 
 error do
