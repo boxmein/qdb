@@ -97,7 +97,7 @@ get '/quote/:id' do
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
-    erb :'quote/add'
+    erb :'quote/view'
   else
     erb :error, locals: { message: "No such quote!" }
   end
@@ -273,11 +273,10 @@ end
 
 get '/quote/:id/delete', :auth => [:delete_quotes] do
 
-  @action = "delete"
   @quote = Quote.find(params[:id].to_i)
 
   if @quote
-    erb :'quote/edit'
+    erb :'quote/delete'
   else
     erb :error, locals: { message: "No such quote!" }
   end
