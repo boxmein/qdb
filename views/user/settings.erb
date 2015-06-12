@@ -1,0 +1,33 @@
+<div class="well">
+  <p>Note: this page is private.</p>
+
+  <h2>User <%= @user.name %> (User ID <%= @user.id %>)</h2>
+
+  <h3>Permissions</h3>
+
+  <ul class="permissions">
+    <% @userFlags.each do |flag| %>
+      <li> <%= flag %> </li>
+    <% end %>
+  </ul>
+
+  <h3>Change password</h3>
+
+  <a href="/user/<%= @user.id %>/change_pw">
+    <div class="btn btn-large btn-primary">Change Password</div>
+  </a>
+
+  <h3>Delete account</h3>
+
+  <p>You can delete your account here. The quotes will still remain in the
+  database, and will be removed (if you're the author) on very polite request.
+  </p>
+
+  <div class="alert alert-danger">
+    Note: this cannot be undone!
+  </div>
+
+  <a href="/user/<%= @user.id %>/delete">
+    <div class="btn btn-large btn-danger">Delete account</div>
+  </a>
+</div>

@@ -25,7 +25,7 @@
     <label for="set_flags">set flags</label>
   </div>
 </div>
-<form method="POST" action="/set_flags/<%= @user %>">
+<form method="POST" action="/user/<%= @user %>/set_flags">
   <input id="flags" type="number" name="flags" value="63">
   <input type="submit">
 </form>

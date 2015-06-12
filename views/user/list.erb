@@ -4,7 +4,7 @@
     <div class="name">Username: <%= user.name %></div>
     <div class="flags">Flags: <%= user.flags %>
     <% if @userFlags.include? :set_flags %>
-      <a href="/set_flags/<%= user.name %>">(set)</a>
+      <a href="/user/<%= user.name %>/set_flags">(set)</a>
     <% end %>
     </div>
   </div>
