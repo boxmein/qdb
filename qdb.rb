@@ -232,6 +232,20 @@ get '/logout' do
   redirect '/user/logout'
 end
 
+get '/user/delete', :auth => [:logged_in] do
+  erb :'user/delete'
+end
+
+post '/user/delete', :auth => [:logged_in] do
+  @user = User.find(session[:user_id])
+  if @user
+    @user.destroy
+    session.clear
+    erb "<h2>Done! You're now logged out and your user has been deleted.</h2>"
+  else
+    erb :error, locals: {message: "Your user was not found :o"}
+  end
+end
 
 #
 # Managing quotes
