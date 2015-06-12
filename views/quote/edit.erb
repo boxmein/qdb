@@ -1,7 +1,19 @@
 <h2>Edit Quote</h2>
 
-<form method="POST" action="/quote/<%= @quote.id %>/edit">
-  <input type="text" name="author" value="<%= @quote.author %>" placeholder="Author">
-  <textarea name="quote" placeholder="Quote"><%= @quote.quote %></textarea>
-  <input type="submit">
+<form method="POST" action="/quote/<%= @quote.id %>/edit" class="form-horizontal">
+  <div class="control-group">
+    <label class="control-label col-md-4" for="author">Author</label>
+    <div class="col-md-8">
+      <input class="form-control" type="text" name="author" value="<%= @quote.author %>" placeholder="Author">
+    </div>
+  </div>
+  <div class="control-group">
+    <label for="quote" class="control-label col-md-4">Quote</label>
+    <div class="col-md-8">
+      <textarea class="form-control" name="quote" class="actual-quote" placeholder="Quote"><%= @quote.quote %></textarea>
+    </div>
+  </div>
+  <div class="col-md-8 col-md-offset-4">
+    <input type="submit" class="btn btn-primary btn-large form-control">
+  </div>
 </form>
