@@ -24,7 +24,7 @@ configure do
 
   set(:auth) do |*roles|
     condition do
-      redirect '/login' unless session[:username]
+      redirect '/user/login' unless session[:username]
 
       curr_flags = session[:flags]
       auth_flags = settings.auth_flags
@@ -35,7 +35,7 @@ configure do
         flag_exists = (curr_flags & auth_flags[role]) != 0
         allowed = allowed && flag_exists
       end
-      redirect '/login' unless allowed
+      redirect '/user/login' unless allowed
     end
 
     Sinatra::ReCaptcha.public_key = "6LeTMwgTAAAAAGbcCK0A3l-oKsqeHvvgzyuVO6Yz"
@@ -97,7 +97,7 @@ get '/quote/:id' do
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
-    erb :quote
+    erb :'quote/add'
   else
     erb :error, locals: { message: "No such quote!" }
   end
@@ -112,7 +112,7 @@ end
 get '/quotes/' do
   page = params[:page] == 0 ? 1 : params[:page]
   @quotes = Quote.where(:approved => true).page(params[:page])
-  erb :quotes
+  erb :'quote/list'
 end
 
 get '/quote' do
@@ -127,11 +127,15 @@ end
 # Logins
 #
 
-get '/login' do
-  erb :login
+get '/user/login' do
+  erb :'user/login'
 end
 
-post '/login' do
+get '/login' do
+  redirect '/user/login'
+end
+
+post '/user/login' do
 
   unless params[:name] and params[:password]
     erb :error, locals: {message: "Invalid request body!"}
@@ -145,6 +149,7 @@ post '/login' do
     if pw_hash == params[:password]
       session[:username] = user[:name]
       session[:flags] = user[:flags]
+      session[:user_id] = user[:id]
 
       erb "<h2> Successfully logged in as #{user.name}! </h2>"
     end
@@ -153,11 +158,11 @@ post '/login' do
   end
 end
 
-get '/register' do
-  erb :register
+get '/user/register' do
+  erb :'user/register'
 end
 
-post '/register' do
+post '/user/register' do
 
   unless params[:user] and params[:user][:name] and params[:user][:password]
     erb :error, locals: {message: 'Invalid request body!'}
@@ -182,9 +187,28 @@ post '/register' do
   end
 end
 
-get '/logout' do
+get '/register' do
+  redirect '/user/register'
+end
+
+# Users can only view their own settings
+get '/user/settings' do
+  @user = User.find(session[:user_id])
+
+  if @user
+    erb :'user/settings'
+  else
+    erb :error, locals: {message: "Your user was not found :o"}
+  end
+end
+
+get '/user/logout' do
   session.clear
   erb "<h2> Session cleared! </h2>"
+end
+
+get '/logout' do
+  redirect '/user/logout'
 end
 
 
@@ -193,7 +217,7 @@ end
 #
 
 get '/quote/new', :auth => [:post_quotes] do
-  erb :add_quote
+  erb :'quote/add'
 end
 
 # Post a new quote, returns link to quote
@@ -222,7 +246,7 @@ get '/quote/:id/edit', :auth => [:edit_quotes] do
   @quote = Quote.find(params[:id].to_i)
 
   if @quote
-    erb :edit_quote
+    erb :'quote/edit'
   else
     erb :error, locals: { message: "No such quote!" }
   end
@@ -253,7 +277,7 @@ get '/quote/:id/delete', :auth => [:delete_quotes] do
   @quote = Quote.find(params[:id].to_i)
 
   if @quote
-    erb :edit_quote
+    erb :'quote/edit'
   else
     erb :error, locals: { message: "No such quote!" }
   end
@@ -288,31 +312,31 @@ end
 
 
 #
-# Managing moderators
+# Managing users
 #
 
-get '/list_users', :auth => [:list_users] do
+get '/user/list', :auth => [:list_users] do
   page = params[:page] == 0 ? 1 : params[:page]
   @users = User.all.page(page)
-  erb :users
+  erb :'user/list'
 end
 
-get '/set_flags/:user', :auth => [:set_flags] do
-  @user = params[:user]
-  erb :set_flags
+get '/user/:id/set_flags', :auth => [:set_flags] do
+  @id = params[:id]
+  erb :'user/set_flags'
 end
 
-post '/set_flags/:user', :auth => [:set_flags] do
+post '/user/:id/set_flags', :auth => [:set_flags] do
   unless params[:flags]
     erb :error, locals: {message: "Invalid form data! 'flags' needed!"}
   end
 
-  user = User.where(:name => params[:user]).first
+  user = User.find(params[:id])
 
   if user
     user[:flags] = params[:flags].to_i
     if user.save
-      logModAction(session[:username], ":set_flags","#{params[:user]} -> #{user[:flags]}")
+      logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
       erb "<h2> Successfully saved new flags #{user[:flags]} to user #{user[:name]}"
     else
       erb :error, locals: {message: "Error saving user!"}
@@ -323,10 +347,10 @@ post '/set_flags/:user', :auth => [:set_flags] do
 end
 
 # Moderation queue
-get '/modq', :auth => [:approve_quotes] do
+get '/moderate/queue', :auth => [:approve_quotes] do
   @quotes = Quote.where(:approved => false)
   if @quotes
-    erb :modq
+    erb :'mod/approve_queue'
   else
     erb :error, locals: {message: "Moderation queue clear. :D"}
   end
