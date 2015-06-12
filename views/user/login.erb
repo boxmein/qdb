@@ -1,6 +1,27 @@
 <h2>Login</h2>
-<form method="POST" action="/user/login">
-  <input type="text" name="name" placeholder="Username">
-  <input type="password" name="password" placeholder="Password">
-  <input type="submit" value="Login">
+<form method="POST" action="/user/login" class="form-horizontal">
+  <% if @loggedIn %>
+  <div class="alert alert-info">
+    You should note that you <em>are</em> actually logged in already. Log out if
+    you want to swap users!
+  </div>
+  <% end %>
+  <div class="form-group">
+    <label class="control-label col-md-2" for="Username">Username</label>
+    <div class="col-md-6">
+      <input class="form-control" type="text" name="name" placeholder="Username">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-md-2" for="password">Password</label>
+    <div class="col-md-6">
+      <input class="form-control" type="password" name="password" placeholder="Password">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-2">
+      <input class="btn btn-primary btn-large"
+        <% if @loggedIn %>disabled<% end %> type="submit" value="Login">
+    </div>
+  </div>
 </form>
