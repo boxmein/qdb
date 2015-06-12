@@ -5,11 +5,11 @@
 
   <h3>Permissions</h3>
 
-  <ul class="permissions">
+  <div class="permissions">
     <% @userFlags.each do |flag| %>
-      <li> <%= flag %> </li>
+      <div class="badge"> <%= flag %> </div>
     <% end %>
-  </ul>
+  </div>
 
   <h3>Change password</h3>
 
