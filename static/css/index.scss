@@ -2,21 +2,14 @@
 // sass index.scss index.css
 @import "_global";
 
-textarea.quote {
+textarea.actual-quote {
   display: block;
   width: 100%;
   resize: vertical;
+
+  min-height: 300px;
 }
 
-// Add Quote UI
-.add_quote {
-  max-width: 500px;
-}
-
-.add_quote input {
-  display: block;
-  width: 100%;
-}
 
 // List Users UI
 .users .user > .name, .users .user > .flags {
