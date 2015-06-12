@@ -12,8 +12,8 @@ textarea.actual-quote {
 
 
 // List Users UI
-.users .user > .name, .users .user > .flags {
-  display: inline-block;
+.users .user > .name, .users .user > .flags, .users .user > .id {
+  font-weight: bold;
 }
 
 // Overriding Bootstrap crap
@@ -33,10 +33,6 @@ textarea.actual-quote {
   padding-bottom: 5px;
 
   transition: background-color 0.1s ease;
-}
-
-.navbar .navbar-nav > li > a:hover {
-  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .navbar .navbar-text {
