@@ -1,14 +1,23 @@
-<div class="users">
-  <% @users.each do |user| %>
-  <div class="user">
-    <div class="name">Username: <%= user.name %></div>
-    <div class="flags">Flags: <%= user.flags %>
-    <% if @userFlags.include? :set_flags %>
-      <a href="/user/<%= user.name %>/set_flags">(set)</a>
+
+<div class="well">
+  <h2>User Listing</h2>
+
+  <table class="table users">
+    <thead>
+      <tr> <th>ID</th> <th> Username </th> <th> Flags </th> <th> Edit </th> </tr>
+    </thead>
+    <tbody>
+    <% @users.each do |user| %>
+    <tr>
+      <td><%= user.id %></td>
+      <td><%= user.name %></td>
+      <td><%= user.flags %><% if @userFlags.include? :set_flags %>
+            <a href="/user/<%= user.id %>/set_flags">(set)</a>
+          <% end %></td>
+      <td><a href="/user/<%= user.id %>/edit">Edit</a></td>
+    </tr>
     <% end %>
-    </div>
-  </div>
-  <% end %>
+  </table>
 
   <% will_paginate @users unless @users.empty? %>
 </div>
