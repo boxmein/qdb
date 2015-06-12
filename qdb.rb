@@ -24,7 +24,16 @@ configure do
 
   set(:auth) do |*roles|
     condition do
-      redirect '/user/login' unless session[:username]
+      # new pseudo-role: logged_in
+      if roles.delete(:logged_in)
+        redirect '/user/login' unless session[:username]
+        return
+      end
+
+      unless session[:username]
+        redirect '/user/login'
+        return
+      end
 
       curr_flags = session[:flags]
       auth_flags = settings.auth_flags
@@ -137,6 +146,9 @@ end
 
 post '/user/login' do
 
+  unless session.empty?
+    erb :error, locals: {message: "You're already logged in!"}
+  end
   unless params[:name] and params[:password]
     erb :error, locals: {message: "Invalid request body!"}
   end
@@ -192,7 +204,7 @@ get '/register' do
 end
 
 # Users can only view their own settings
-get '/user/settings' do
+get '/user/settings', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
 
   if @user
@@ -202,9 +214,13 @@ get '/user/settings' do
   end
 end
 
-get '/user/logout' do
+get '/user/logout', :auth => [:logged_in] do
   session.clear
   erb "<h2> Session cleared! </h2>"
+end
+
+get '/user/set_pw', :auth => [:logged_in] do
+
 end
 
 get '/logout' do
