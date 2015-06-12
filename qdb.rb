@@ -224,7 +224,9 @@ get '/user/logout', :auth => [:logged_in] do
   erb "<h2> Session cleared! </h2>"
 end
 
-get '/user/set_pw', :auth => [:logged_in] do
+get '/logout' do
+  redirect '/user/logout'
+end
 
 get '/user/change_pw', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
