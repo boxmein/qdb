@@ -39,23 +39,23 @@
           <% end %>
 
           <% if @userFlags.include? :approve_quotes %>
-          <li><a href="/modq">approval queue</a></li>
+          <li><a href="/moderate/queue">approval queue</a></li>
           <% end %>
 
           <% if @userFlags.include? :list_users %>
-          <li><a href="/list_users">users</a></li>
+          <li><a href="/user/list">users</a></li>
           <% end %>
         </ul>
 
         <p class="navbar-text navbar-right">
-          // logged in as <%= @username %>
+          // logged in as <a href="/user/settings"><%= @username %></a>
 
-          (<a href="/logout">logout</a>)
+          (<a href="/user/logout">logout</a>)
         </p>
         <% else %>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/login">login</a></li>
-          <li><a href="/register">register</a></li>
+          <li><a href="/user/login">login</a></li>
+          <li><a href="/user/register">register</a></li>
         </ul>
         <% end %>
       </div>
