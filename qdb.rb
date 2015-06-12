@@ -298,7 +298,7 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
   if quote
     quote.author = params[:author]
     quote.quote  = params[:quote]
-    if mdl.save
+    if quote.save
       logModAction(session[:username], ":edit_quotes", params[:id].to_i)
       redirect "/quote/#{params[:id]}"
     else
