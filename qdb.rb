@@ -473,9 +473,5 @@ end
 # Moderation queue
 get '/moderate/queue', :auth => [:approve_quotes] do
   @quotes = Quote.where(:approved => false)
-  if @quotes
-    erb :'mod/approve_queue'
-  else
-    erb :error, locals: {message: "Moderation queue clear. :D"}
-  end
+  erb :'mod/approve_queue'
 end
