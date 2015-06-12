@@ -475,3 +475,47 @@ get '/moderate/queue', :auth => [:approve_quotes] do
   @quotes = Quote.where(:approved => false)
   erb :'mod/approve_queue'
 end
+
+
+#
+# Errors
+#
+
+class ErrLoggedIn       < StandardError; end
+class ErrInvalidRequest < StandardError; end
+class ErrAuthFailure    < StandardError; end
+class ErrWhileSaving    < StandardError; end
+class ErrPWIncorrect    < StandardError; end
+class ErrPWMatch        < StandardError; end
+class ErrCaptchaFailure < StandardError; end
+
+error ErrLoggedIn do
+  "You're already logged in!"
+end
+
+error ErrInvalidRequest do
+  <<-EOF
+  Invalid request body! If you're doing API calls, try not missing any inputs.
+  Otherwise, well, bad luck!
+  EOF
+end
+
+error ErrAuthFailure do
+  "Invalid username or password :("
+end
+
+error ErrWhileSaving do
+  "Something went wrong saving your " + env['sinatra.error'].message
+end
+
+error ErrPWMatch do
+  "Your new passwords didn't match!"
+end
+
+error ErrPWIncorrect do
+  "Your old password wasn't correct!"
+end
+
+error ErrCaptchaFailure do
+  "CAPTCHA control failed :( Try again!"
+end
