@@ -65,9 +65,7 @@ configure do
   end
 
   set :logModAction, lambda { |name, act, on| logModAction(name, act, on) }
-
   set :public_folder, File.dirname(__FILE__) + '/static'
-
   set :recaptcha_secret, ENV['RECAPTCHA_SECRET']
 end
 
@@ -92,6 +90,17 @@ helpers do
   end
 end
 
+error do
+  erb :error, locals: {message: env['sinatra.error'].message}
+end
+
+error 403 do
+  erb :'responses/403'
+end
+
+not_found do
+  erb :'responses/404'
+end
 
 #
 # Viewing quotes
@@ -111,7 +120,7 @@ get '/quote/:id' do
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
     erb :'quote/view'
   else
-    erb :error, locals: { message: "No such quote!" }
+    404
   end
 end
 
@@ -140,6 +149,24 @@ end
 # Logins
 #
 
+error ErrLoggedIn do
+  "You're already logged in!"
+end
+
+error ErrInvalidRequest do
+  <<-EOF
+  Invalid request body! If you're doing API calls, try not missing any inputs.
+  Otherwise, well, bad luck!
+  EOF
+end
+
+error ErrAuthFailure do
+  "Invalid username or password :("
+end
+
+error ErrWhileSaving do
+  "Something went wrong saving your " + env['sinatra.error'].message
+
 get '/user/login' do
   erb :'user/login'
 end
@@ -151,10 +178,10 @@ end
 post '/user/login' do
 
   unless session.empty?
-    erb :error, locals: {message: "You're already logged in!"}
+    raise ErrLoggedIn
   end
   unless params[:name] and params[:password]
-    erb :error, locals: {message: "Invalid request body!"}
+    raise ErrInvalidRequest
   end
 
   user = User.where(name: params[:name]).first
@@ -170,10 +197,10 @@ post '/user/login' do
       erb "<h2> Successfully logged in as #{user.name}! </h2>"
 
     else
-      erb :error, locals: { message: "User/password invalid :(" }
+      raise ErrAuthFailure
     end
   else
-    erb :error, locals: {message: "No such user!"}
+    404
   end
 end
 
@@ -181,16 +208,17 @@ get '/user/register' do
   erb :'user/register'
 end
 
+error ErrCaptchaFailure do
+  "CAPTCHA control failed :( Try again!"
+end
+
 post '/user/register' do
 
   unless params[:user] and params[:user][:name] and params[:user][:password]
-    erb :error, locals: {message: 'Invalid request body!'}
+    raise ErrInvalidRequest
   end
 
-  erb :error, locals: {message: "Recaptcha failed :o"} unless recaptcha_correct?
-
-  puts 'Creating new user with details:'
-  p params[:user]
+  raise ErrCaptchaFailure unless recaptcha_correct?
 
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
@@ -198,11 +226,9 @@ post '/user/register' do
   user = User.new params[:user]
 
   if user.save
-    puts 'Success!'
     erb "<h2>Successfully registered with username #{params[:user][:name]}!</h2>"
   else
-    puts 'Failure!'
-    erb :error, locals: {message: "Error saving your user!"}
+    raise ErrWhileSaving
   end
 end
 
@@ -217,7 +243,7 @@ get '/user/settings', :auth => [:logged_in] do
   if @user
     erb :'user/settings'
   else
-    erb :error, locals: {message: "Your user was not found :o"}
+    404
   end
 end
 
@@ -235,8 +261,16 @@ get '/user/change_pw', :auth => [:logged_in] do
   if @user
     erb :'user/change_pw'
   else
-    erb :error, locals: {message: "Your user was not found :o"}
+    404
   end
+end
+
+error ErrPWMatch do
+  "Your new passwords didn't match!"
+end
+
+error ErrPWIncorrect do
+  "Your old password wasn't correct!"
 end
 
 post '/user/change_pw', :auth => [:logged_in] do
@@ -244,22 +278,18 @@ post '/user/change_pw', :auth => [:logged_in] do
   if @user
     # Check that the old password is right
     pw_hash = BCrypt::Password.new(@user.password)
-    unless pw_hash == params[:password]
-      erb :error, locals: {message: "Your old password wasn't correct!"}
-    end
 
-    unless params[:password] == params[:password_confirm]
-      erb :error, locals: {message: "Two new passwords didn't match!"}
-    end
+    raise ErrPWIncorrect unless pw_hash == params[:password]
+    raise ErrPWMatch params[:password] == params[:password_confirm]
 
     @user.password = BCrypt::Password.create(params[:password])
     if @user.save
       erb "<h2>New password successfully saved! Re-login to try it out!</h2>"
     else
-      erb :error, locals: {message: "Failed to save your password D:"}
+      raise ErrWhileSaving
     end
   else
-    erb :error, locals: {message: "Your user was not found :o"}
+    404
   end
 end
 
@@ -274,7 +304,7 @@ post '/user/delete', :auth => [:logged_in] do
     session.clear
     erb "<h2>Done! You're now logged out and your user has been deleted.</h2>"
   else
-    erb :error, locals: {message: "Your user was not found :o"}
+    404
   end
 end
 
@@ -283,7 +313,7 @@ get '/user/:id/edit', :auth => [:edit_users] do
   if @user
     erb :'user/edit'
   else
-    erb :error, locals: {message: "No such user!"}
+    404
   end
 end
 
@@ -297,10 +327,10 @@ post '/user/:id/edit', :auth => [:edit_users] do
     if @user.save
       erb "<h2>The user has been edited.</h2>"
     else
-      erb :error, locals: {message: "Error saving the user!"}
+      raise ErrWhileSaving
     end
   else
-    erb :error, locals: {message: "No such user!"}
+    404
   end
 end
 
@@ -327,7 +357,7 @@ post '/quote/new', :auth => [:post_quotes] do
     logModAction(session[:username], ":post_quotes", mdl[:id])
     redirect '/quotes/'
   else
-    erb :error, locals: { message: "Error saving the quote!" }
+    raise ErrWhileSaving
   end
 end
 
@@ -342,13 +372,13 @@ get '/quote/:id/edit', :auth => [:edit_quotes] do
   if @quote
     erb :'quote/edit'
   else
-    erb :error, locals: { message: "No such quote!" }
+    404
   end
 end
 
 post '/quote/:id/edit', :auth => [:edit_quotes] do
   unless params[:author] and params[:quote]
-    erb :error, locals: {message: "Invalid form data!"}
+    raise ErrInvalidRequest
   end
   quote = Quote.find(params[:id].to_i)
 
@@ -359,7 +389,7 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
       logModAction(session[:username], ":edit_quotes", params[:id].to_i)
       redirect "/quote/#{params[:id]}"
     else
-      erb :error, locals: { message: "Error saving quote!" }
+      raise ErrWhileSaving
     end
   end
 end
@@ -372,7 +402,7 @@ get '/quote/:id/delete', :auth => [:delete_quotes] do
   if @quote
     erb :'quote/delete'
   else
-    erb :error, locals: { message: "No such quote!" }
+    404
   end
 end
 
@@ -385,7 +415,7 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
     quote.destroy
     erb "<h2> Destroyed quote #{params[:id]} successfully. </h2>"
   else
-    erb :error, locals: { message: "Error deleting quote!" }
+    raise ErrWhileSaving
   end
 end
 
@@ -396,10 +426,10 @@ post '/quote/:id/approve', :auth => [:approve_quotes] do
     if quote.save
       erb "<h2> Successfully saved quote #{params[:id]}! </h2>"
     else
-      erb :error, locals: {message: "Error saving quote!" }
+      raise ErrWhileSaving
     end
   else
-    erb :error, locals: {message: "No such quote!"}
+    404
   end
 end
 
@@ -423,9 +453,7 @@ get '/user/:id/set_flags', :auth => [:set_flags] do
 end
 
 post '/user/:id/set_flags', :auth => [:set_flags] do
-  unless params[:flags]
-    erb :error, locals: {message: "Invalid form data! 'flags' needed!"}
-  end
+  raise ErrInvalidRequest unless params[:flags]
 
   user = User.find(params[:id])
 
@@ -435,10 +463,10 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
       erb "<h2> Successfully saved new flags #{user[:flags]} to user #{user[:name]}"
     else
-      erb :error, locals: {message: "Error saving user!"}
+      raise ErrWhileSaving
     end
   else
-    erb :error, locals: {message: "No such user!"}
+    404
   end
 end
 
