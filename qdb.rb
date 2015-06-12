@@ -259,7 +259,9 @@ end
 post '/quote/new', :auth => [:post_quotes] do
   q = params[:quote]
 
-  q[:quote]  = esc(q[:quote])
+  # no double escaping now!
+  # make sure that quote.erb et al keep esc()ing the input then
+  # q[:quote]  = esc(q[:quote])
   q[:author] = session[:username]
 
   mdl = Quote.new q
