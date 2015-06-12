@@ -2,16 +2,10 @@
 // sass index.scss index.css
 @import "_global";
 
-
-.quote {
-  font-family: $quoteFont;
-}
-
 textarea.quote {
   display: block;
   width: 100%;
   resize: vertical;
-  font-family: $quoteFont;
 }
 
 // Add Quote UI
@@ -60,4 +54,11 @@ textarea.quote {
 
 .container {
   max-width: 600px;
+}
+
+.actual-quote {
+  white-space: pre-line;
+  overflow: auto;
+  font-family: $quoteFont;
+  font-size: 12px;
 }
