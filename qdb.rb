@@ -117,7 +117,8 @@ end
 
 # Get a list of quotes with a sort-by action
 get '/quotes/:sortby' do
-  pass unless params[:sortby]
+  # pass unless params[:sortby]
+  pass
 end
 
 # Get a list of ~10 quotes
@@ -415,6 +416,9 @@ end
 
 get '/user/:id/set_flags', :auth => [:set_flags] do
   @id = params[:id]
+  user = User.find(params[:id])
+  @username = user.name
+  @userflags = user.flags
   erb :'user/set_flags'
 end
 
