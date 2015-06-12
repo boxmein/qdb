@@ -25,7 +25,7 @@ configure do
   set(:auth) do |*roles|
     condition do
       # new pseudo-role: logged_in
-      if roles.delete(:logged_in)
+      if roles.include? :logged_in
         redirect '/user/login' unless session[:username]
         return
       end
@@ -41,6 +41,8 @@ configure do
       allowed = roles.length > 0
 
       roles.each do |role|
+        # skip the :logged_in role
+        next if role == :logged_in
         flag_exists = (curr_flags & auth_flags[role]) != 0
         allowed = allowed && flag_exists
       end
@@ -164,9 +166,12 @@ post '/user/login' do
       session[:user_id] = user[:id]
 
       erb "<h2> Successfully logged in as #{user.name}! </h2>"
+
+    else
+      erb :error, locals: { message: "User/password invalid :(" }
     end
   else
-    erb :error, locals: { message: "User/password invalid :(" }
+    erb :error, locals: {message: "No such user!"}
   end
 end
 
