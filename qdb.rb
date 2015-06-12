@@ -149,23 +149,6 @@ end
 # Logins
 #
 
-error ErrLoggedIn do
-  "You're already logged in!"
-end
-
-error ErrInvalidRequest do
-  <<-EOF
-  Invalid request body! If you're doing API calls, try not missing any inputs.
-  Otherwise, well, bad luck!
-  EOF
-end
-
-error ErrAuthFailure do
-  "Invalid username or password :("
-end
-
-error ErrWhileSaving do
-  "Something went wrong saving your " + env['sinatra.error'].message
 
 get '/user/login' do
   erb :'user/login'
@@ -194,7 +177,7 @@ post '/user/login' do
       session[:flags] = user[:flags]
       session[:user_id] = user[:id]
 
-      erb "<h2> Successfully logged in as #{user.name}! </h2>"
+      erb :'responses/success_logging_in'
 
     else
       raise ErrAuthFailure
@@ -206,10 +189,6 @@ end
 
 get '/user/register' do
   erb :'user/register'
-end
-
-error ErrCaptchaFailure do
-  "CAPTCHA control failed :( Try again!"
 end
 
 post '/user/register' do
@@ -226,7 +205,7 @@ post '/user/register' do
   user = User.new params[:user]
 
   if user.save
-    erb "<h2>Successfully registered with username #{params[:user][:name]}!</h2>"
+    erb :'responses/success_registering'
   else
     raise ErrWhileSaving
   end
@@ -249,7 +228,7 @@ end
 
 get '/user/logout', :auth => [:logged_in] do
   session.clear
-  erb "<h2> Session cleared! </h2>"
+  erb :'responses/success_logging_out'
 end
 
 get '/logout' do
@@ -265,14 +244,6 @@ get '/user/change_pw', :auth => [:logged_in] do
   end
 end
 
-error ErrPWMatch do
-  "Your new passwords didn't match!"
-end
-
-error ErrPWIncorrect do
-  "Your old password wasn't correct!"
-end
-
 post '/user/change_pw', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
   if @user
@@ -283,8 +254,9 @@ post '/user/change_pw', :auth => [:logged_in] do
     raise ErrPWMatch params[:password] == params[:password_confirm]
 
     @user.password = BCrypt::Password.create(params[:password])
+
     if @user.save
-      erb "<h2>New password successfully saved! Re-login to try it out!</h2>"
+      erb :'responses/success_saving', locals: {thing: 'your new password'}
     else
       raise ErrWhileSaving
     end
@@ -302,7 +274,7 @@ post '/user/delete', :auth => [:logged_in] do
   if @user
     @user.destroy
     session.clear
-    erb "<h2>Done! You're now logged out and your user has been deleted.</h2>"
+    erb :'responses/success_deleting_user'
   else
     404
   end
@@ -325,7 +297,7 @@ post '/user/:id/edit', :auth => [:edit_users] do
     @user.name = u[:name]
     @user.password = u[:password]
     if @user.save
-      erb "<h2>The user has been edited.</h2>"
+      erb :'responses/success_saving', locals: {thing: 'user', extra: u[:name]}
     else
       raise ErrWhileSaving
     end
@@ -378,7 +350,7 @@ end
 
 post '/quote/:id/edit', :auth => [:edit_quotes] do
   unless params[:author] and params[:quote]
-    raise ErrInvalidRequest
+
   end
   quote = Quote.find(params[:id].to_i)
 
@@ -424,7 +396,7 @@ post '/quote/:id/approve', :auth => [:approve_quotes] do
   if quote
     quote.approved = true
     if quote.save
-      erb "<h2> Successfully saved quote #{params[:id]}! </h2>"
+      erb :'responses/success_saving', locals: {thing: 'quote', extra: params[:id]}
     else
       raise ErrWhileSaving
     end
@@ -461,7 +433,7 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
     user[:flags] = params[:flags].to_i
     if user.save
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
-      erb "<h2> Successfully saved new flags #{user[:flags]} to user #{user[:name]}"
+      erb :'responses/success_saving', locals: {thing: 'user flags for', extra: user[:name]}
     else
       raise ErrWhileSaving
     end
