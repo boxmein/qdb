@@ -1,9 +1,7 @@
 <h2>Edit Quote</h2>
 
-<form method="POST" action="/quote/<%= @quote.id %>/<%= @action %>">
-  <input type="hidden" name="action" value="<%= @action %>" />
+<form method="POST" action="/quote/<%= @quote.id %>/edit">
   <input type="text" name="author" value="<%= @quote.author %>" placeholder="Author">
   <textarea name="quote" placeholder="Quote"><%= @quote.quote %></textarea>
-  <p class="confirm">Really delete this quote?</p>
   <input type="submit">
 </form>
