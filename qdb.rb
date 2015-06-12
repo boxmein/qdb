@@ -226,10 +226,37 @@ end
 
 get '/user/set_pw', :auth => [:logged_in] do
 
+get '/user/change_pw', :auth => [:logged_in] do
+  @user = User.find(session[:user_id])
+  if @user
+    erb :'user/change_pw'
+  else
+    erb :error, locals: {message: "Your user was not found :o"}
+  end
 end
 
-get '/logout' do
-  redirect '/user/logout'
+post '/user/change_pw', :auth => [:logged_in] do
+  @user = User.find(session[:user_id])
+  if @user
+    # Check that the old password is right
+    pw_hash = BCrypt::Password.new(@user.password)
+    unless pw_hash == params[:password]
+      erb :error, locals: {message: "Your old password wasn't correct!"}
+    end
+
+    unless params[:password] == params[:password_confirm]
+      erb :error, locals: {message: "Two new passwords didn't match!"}
+    end
+
+    @user.password = BCrypt::Password.create(params[:password])
+    if @user.save
+      erb "<h2>New password successfully saved! Re-login to try it out!</h2>"
+    else
+      erb :error, locals: {message: "Failed to save your password D:"}
+    end
+  else
+    erb :error, locals: {message: "Your user was not found :o"}
+  end
 end
 
 get '/user/delete', :auth => [:logged_in] do
