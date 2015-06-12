@@ -44,6 +44,12 @@ textarea.quote {
   line-height: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
+
+  transition: background-color 0.1s ease;
+}
+
+.navbar .navbar-nav > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .navbar .navbar-text {
