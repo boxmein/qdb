@@ -19,7 +19,8 @@ configure do
     :delete_quotes => 4,
     :list_users => 8,
     :approve_quotes => 16,
-    :set_flags => 32
+    :set_flags => 32,
+    :edit_users => 64
   }
 
   set(:auth) do |*roles|
@@ -273,6 +274,32 @@ post '/user/delete', :auth => [:logged_in] do
     erb "<h2>Done! You're now logged out and your user has been deleted.</h2>"
   else
     erb :error, locals: {message: "Your user was not found :o"}
+  end
+end
+
+get '/user/:id/edit', :auth => [:edit_users] do
+  @user = User.find(params[:id])
+  if @user
+    erb :'user/edit'
+  else
+    erb :error, locals: {message: "No such user!"}
+  end
+end
+
+post '/user/:id/edit', :auth => [:edit_users] do
+  @user = User.find(params[:id])
+  if @user
+    u = params[:user]
+    @user.id = u[:id]
+    @user.name = u[:name]
+    @user.password = u[:password]
+    if @user.save
+      erb "<h2>The user has been edited.</h2>"
+    else
+      erb :error, locals: {message: "Error saving the user!"}
+    end
+  else
+    erb :error, locals: {message: "No such user!"}
   end
 end
 

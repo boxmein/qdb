@@ -1,0 +1,37 @@
+<div class="well clearfix">
+  <h2>Edit User <%= @user.name %> #<%= @user.id %></h2>
+
+  <form method="POST" action="/user/<%= @user.id %>/edit" class="form-horizontal">
+    <div class="control-group">
+      <label for="user[name]" class="control-label col-md-4">Username</label>
+      <div class="col-md-8">
+        <input class="form-control" type="text" name="user[name]" placeholder="Username" value="<%= @user.name %>">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="user[id]" class="control-label col-md-4">User ID</label>
+      <div class="col-md-8">
+        <input class="form-control" type="number" name="user[id]" placeholder="Username" value="<%= @user.id %>">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="user[password]" class="control-label col-md-4">Hashed Password</label>
+      <div class="col-md-8">
+        <input class="form-control" type="text" name="user[password]" placeholder="Password" value="<%= @user.password %>">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="flags" class="control-label col-md-4">Flags</label>
+      <div class="col-md-8">
+        <a href="/user/<%=@user.id%>/set_flags" class="btn btn-info btn-sm">Set Flags</a>
+      </div>
+    </div>
+
+    <div class="col-md-8 col-md-offset-4">
+      <input type="submit" class="btn btn-primary btn-large" value="Apply">
+    </div>
+  </form>
+</div>
