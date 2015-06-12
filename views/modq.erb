@@ -2,10 +2,16 @@
 
 <div class="quotes">
   <% @quotes.each do |quote| %>
-  <div class="quote">
+  <div class="quote well">
     <h4>Quote #<%=quote.id%> by <%=quote.author%></h4>
     <div class="approved">Approved: <%= quote.approved %></div>
-    <div class="quote"> <%= quote.quote %> </div>
+    <div class="actual-quote"> <%= quote.quote %> </div>
+    <% if @userFlags.include?(:edit_quotes) %>
+      <a href="/quote/<%= quote.id %>/edit">(edit)</a>
+    <% end %>
+    <% if @userFlags.include?(:delete_quotes) %>
+      <a href="/quote/<%= quote.id %>/delete">(delete)</a>
+    <% end %>
     <form method="POST" action="/quote/<%=quote.id%>/approve">
       <input type="submit" value="Approve">
     </form>
