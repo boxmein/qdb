@@ -5,7 +5,7 @@
   <div class="quote well">
     <h4>Quote #<%=quote.id%> by <%=quote.author%></h4>
     <div class="approved">Approved: <%= quote.approved %></div>
-    <div class="actual-quote"> <%= quote.quote %> </div>
+    <div class="actual-quote"> <%= esc quote.quote %> </div>
     <form class="form-inline" style="display: inline-block" method="POST" action="/quote/<%=quote.id%>/approve">
       <input type="submit" class="btn btn-primary" value="Approve">
     </form>
