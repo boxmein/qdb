@@ -69,13 +69,9 @@ configure do
     Sinatra::ReCaptcha.private_key = ENV['RECAPTCHA_SECRET']
   end
 
-  # Open a new file for moderation action logging
-  $moderationLog = File.new './log/moderation.log', 'a'
-  $moderationLog.sync = true
-
+  # Mod logs are now also stdout
   def logModAction(name, action, on)
-    time = DateTime.now.iso8601
-    $moderationLog.puts "time=#{time} name=#{name} action=#{action} on=#{on}"
+    puts "modaction name=#{name} action=#{action} on=#{on}"
   end
 
   set :logModAction, lambda { |name, act, on| logModAction(name, act, on) }
