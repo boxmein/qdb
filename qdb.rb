@@ -477,9 +477,10 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
 
   if user
     user[:flags] = params[:flags].to_i
+    session[:flags] = user[:flags]
     if user.save
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
-      flash[:success] = 'Successfully saved user flags!'
+      flash[:success] = 'Successfully saved user flags! Updated session flags too!'
       redirect '/user/list'
     else
       flash[:error] = 'Failed to save user flags!'
