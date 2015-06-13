@@ -1,9 +1,14 @@
 # qdb #
 
-Quote Database Engine in Ruby / Sinatra
-
+Quote Database Engine in Ruby / Sinatra.
 
 ## Running
+
+**You need to have:** Postgres, Ruby ~1.9.1, `ruby-dev` (for a few modules) and
+Bundler for the rubygem dependencies.
+
+Before actually running the code, you should set up a few environment variables.
+Check out the file `environment_variables` and assign values to everything.
 
 Here's the long and *utterly* tedious process you need to pass to get this up
 and running:
@@ -16,20 +21,26 @@ ruby qdb.rb
 
 ## Dev environment
 
-Here's a quick dev environment: run `vagrant up`.
-
+Here's a quick dev environment: run `vagrant up`. Don't forget to set up the
+environment variables first! The file will be copied onto `~/.bash_profile` on
+the Vagrant VM.
 
 ## Contributing
 
 Send a pull request, yo
 
-
-
 ## Features
 
-- TODO: User accounts with permission grabs (eg add_quote, moderate_quote)
-- TODO: Moderation UI with public modlog
-- TODO: Voting (captchas)
+- User accounts with complex permissions
+- Fancy Material layout (it even has ripples!)
+- Fancy quote management
+- Fancy user management
+- Moderation logs
+- Pagination
+- TODO: Make everything configurable
+- TODO: Different types of quote sorting
+- TODO: Public moderation logs
+- TODO: Voting on quotes
 
 ## Credit
 
