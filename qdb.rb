@@ -179,7 +179,7 @@ post '/user/login' do
       erb :'responses/success_logging_in'
 
     else
-      raise ErrAuthFailure
+      raise ClientError, "Wrong username or password. I won't tell which >:D"
     end
   else
     404
@@ -192,11 +192,8 @@ end
 
 post '/user/register' do
 
-  unless params[:user] and params[:user][:name] and params[:user][:password]
-    raise ErrInvalidRequest
-  end
-
-  raise ErrCaptchaFailure unless recaptcha_correct?
+  raise InvalidRequest unless params[:user] and params[:user][:name] and params[:user][:password]
+  raise ClientError, "You failed the captcha!" unless recaptcha_correct?
 
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
@@ -206,7 +203,7 @@ post '/user/register' do
   if user.save
     erb :'responses/success_registering'
   else
-    raise ErrWhileSaving
+    raise RouteError, "Error while saving new user"
   end
 end
 
@@ -249,15 +246,15 @@ post '/user/change_pw', :auth => [:logged_in] do
     # Check that the old password is right
     pw_hash = BCrypt::Password.new(@user.password)
 
-    raise ErrPWIncorrect unless pw_hash == params[:password]
-    raise ErrPWMatch params[:password] == params[:password_confirm]
+    raise ClientError, "Incorrect password!"   unless pw_hash == params[:password]
+    raise ErrPWMatch, "Passwords don't match!" unless params[:password] == params[:password_confirm]
 
     @user.password = BCrypt::Password.create(params[:password])
 
     if @user.save
       erb :'responses/success_saving', locals: {thing: 'your new password'}
     else
-      raise ErrWhileSaving
+      raise RouteError, "Error while saving new user"
     end
   else
     404
@@ -298,7 +295,7 @@ post '/user/:id/edit', :auth => [:edit_users] do
     if @user.save
       erb :'responses/success_saving', locals: {thing: 'user', extra: u[:name]}
     else
-      raise ErrWhileSaving
+      raise RouteError, "Error while saving edited user"
     end
   else
     404
@@ -328,7 +325,7 @@ post '/quote/new', :auth => [:post_quotes] do
     logModAction(session[:username], ":post_quotes", mdl[:id])
     redirect '/quotes/'
   else
-    raise ErrWhileSaving
+    raise RouteError, "Error while saving new quote"
   end
 end
 
@@ -360,7 +357,7 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
       logModAction(session[:username], ":edit_quotes", params[:id].to_i)
       redirect "/quote/#{params[:id]}"
     else
-      raise ErrWhileSaving
+      raise RouteError, "Error while saving edited quote"
     end
   end
 end
@@ -386,7 +383,7 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
     quote.destroy
     erb "<h2> Destroyed quote #{params[:id]} successfully. </h2>"
   else
-    raise ErrWhileSaving
+    raise RouteError, "Error while deleting quote"
   end
 end
 
@@ -397,7 +394,7 @@ post '/quote/:id/approve', :auth => [:approve_quotes] do
     if quote.save
       erb :'responses/success_saving', locals: {thing: 'quote', extra: params[:id]}
     else
-      raise ErrWhileSaving
+      raise RouteError, "Error while saving new approved quote"
     end
   else
     404
@@ -411,7 +408,7 @@ end
 
 get '/user/list', :auth => [:list_users] do
   page = params[:page] == 0 ? 1 : params[:page]
-  @users = User.all.page(page)
+  @users = User.all.order(:id).page(page)
   erb :'user/list'
 end
 
@@ -424,7 +421,7 @@ get '/user/:id/set_flags', :auth => [:set_flags] do
 end
 
 post '/user/:id/set_flags', :auth => [:set_flags] do
-  raise ErrInvalidRequest unless params[:flags]
+  raise InvalidRequest unless params[:flags]
 
   user = User.find(params[:id])
 
@@ -434,7 +431,7 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
       erb :'responses/success_saving', locals: {thing: 'user flags for', extra: user[:name]}
     else
-      raise ErrWhileSaving
+      raise RouteError, "Error while saving"
     end
   else
     404
@@ -452,41 +449,27 @@ end
 # Errors
 #
 
-class ErrLoggedIn       < StandardError; end
-class ErrInvalidRequest < StandardError; end
-class ErrAuthFailure    < StandardError; end
-class ErrWhileSaving    < StandardError; end
-class ErrPWIncorrect    < StandardError; end
-class ErrPWMatch        < StandardError; end
-class ErrCaptchaFailure < StandardError; end
+class ClientError < StandardError; end
+class RouteError < StandardError; end
+class InvalidRequest < StandardError; end
 
-error ErrLoggedIn do
-  "You're already logged in!"
-end
-
-error ErrInvalidRequest do
-  <<-EOF
-  Invalid request body! If you're doing API calls, try not missing any inputs.
-  Otherwise, well, bad luck!
+error InvalidRequest do
+  status 401
+  body(erb(:error, locals: {message: <<-EOF
+  <b>Invalid request body!</b>
+  <p>If you're doing API calls, try not missing any inputs. Otherwise, well,
+  bad luck! Here's maybe an error message.</b>
+  <pre><code>#{env['sinatra.error'].message}</pre></code>
   EOF
+  }))
 end
 
-error ErrAuthFailure do
-  "Invalid username or password :("
+error RouteError do
+  status 500
+  body(erb(:error, locals: {message: env['sinatra.error'].message}))
 end
 
-error ErrWhileSaving do
-  "Something went wrong saving your " + env['sinatra.error'].message
-end
-
-error ErrPWMatch do
-  "Your new passwords didn't match!"
-end
-
-error ErrPWIncorrect do
-  "Your old password wasn't correct!"
-end
-
-error ErrCaptchaFailure do
-  "CAPTCHA control failed :( Try again!"
+error ClientError do
+  status 401
+  body(erb(:error, locals: {message: env['sinatra.error'].message}))
 end
