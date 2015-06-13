@@ -52,7 +52,9 @@ configure do
       redirect '/user/login' unless allowed
     end
 
-    Sinatra::ReCaptcha.public_key = "6LeTMwgTAAAAAGbcCK0A3l-oKsqeHvvgzyuVO6Yz"
+    abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
+    Sinatra::ReCaptcha.public_key = ENV['RECAPTCHA_CLIENTKEY']
+
     abort "Set $RECAPTCHA_SECRET to your recaptcha secret!" unless ENV['RECAPTCHA_SECRET']
     Sinatra::ReCaptcha.private_key = ENV['RECAPTCHA_SECRET']
   end
