@@ -50,24 +50,23 @@ configure do
         if params[:golden_key] == ENV['GOLDEN_KEY']
           # stop checking for authentication stuff here
           puts "!!! Golden Key applied"
-          return
         end
-      end
+      else
+        curr_flags = session[:flags]
+        auth_flags = settings.auth_flags
 
-      curr_flags = session[:flags]
-      auth_flags = settings.auth_flags
+        allowed = roles.length > 0
 
-      allowed = roles.length > 0
-
-      roles.each do |role|
-        # skip the :logged_in role
-        next if role == :logged_in
-        flag_exists = (curr_flags & auth_flags[role]) != 0
-        allowed = allowed && flag_exists
-      end
-      unless allowed
-        flash[:error] = 'You aren\'t allowed to go here! :('
-        redirect '/user/login'
+        roles.each do |role|
+          # skip the :logged_in role
+          next if role == :logged_in
+          flag_exists = (curr_flags & auth_flags[role]) != 0
+          allowed = allowed && flag_exists
+        end
+        unless allowed
+          flash[:error] = 'You aren\'t allowed to go here! :('
+          redirect '/user/login'
+        end
       end
     end
 
