@@ -3,7 +3,8 @@
 	[
 		{
 			"follow_symlinks": true,
-			"path": "C:\\Users\\Johannes\\Documents\\Experiments\\qdb"
+			"path": ".",
+      "folder_exclude_patterns": [".idea", ".vagrant"]
 		}
 	]
 }
