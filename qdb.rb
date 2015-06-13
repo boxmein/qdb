@@ -10,9 +10,11 @@ require 'bcrypt'
 require './models/Quote'
 require './models/User'
 
-configure do
-  enable :sessions
+abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
+use Rack::Session::Cookie, :expire_after => 604800,
+                           :secret => ENV['COOKIE_SECRET']
 
+configure do
   set :auth_flags, {
     :post_quotes => 1,
     :edit_quotes => 2,
