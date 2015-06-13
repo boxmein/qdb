@@ -12,3 +12,6 @@ static/css/.sass-cache
 
 # I have no idea
 .idea
+
+# sublime crap
+*.sublime-workspace
