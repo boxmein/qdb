@@ -10,4 +10,8 @@ echo "Installing gems..."
 sudo gem install bundler
 bundle install
 
+echo "Copying over environment variables..."
+
+cp /vagrant/environment_variables ~/.bash_profile
+
 echo "Done!"
