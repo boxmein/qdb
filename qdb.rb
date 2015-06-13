@@ -275,23 +275,24 @@ post '/user/change_pw', :auth => [:logged_in] do
     # Check that the old password is right
     pw_hash = BCrypt::Password.new(@user[:password])
 
-    unless pw_hash == params[:password]
-      flash[:error] = 'Invalid password!'
-      redirect '/user/change_pw'
-      return
-    end
-    unless params[:password] == params[:password_confirm]
-      flash[:error] = 'Your passwords didn\'t match!'
-      redirect '/user/change_pw'
-    end
+    if pw_hash == params[:password]
 
-    @user.password = BCrypt::Password.create(params[:password])
+      if params[:password] == params[:password_confirm]
+        flash[:error] = 'Your passwords didn\'t match!'
+        redirect '/user/change_pw'
+      else
+        @user[:password] = BCrypt::Password.create(params[:password])
 
-    if @user.save
-      flash[:success] = 'Successfully changed your password!'
-      redirect '/user/settings'
+        if @user.save
+          flash[:success] = 'Successfully changed your password!'
+          redirect '/user/settings'
+        else
+          flash[:error] = 'Error saving new user!'
+          redirect '/user/change_pw'
+        end
+      end
     else
-      flash[:error] = 'Error saving new user!'
+      flash[:error] = 'Invalid password!'
       redirect '/user/change_pw'
     end
   else
@@ -477,7 +478,6 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
 
   if user
     user[:flags] = params[:flags].to_i
-    session[:flags] = user[:flags]
     if user.save
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
       flash[:success] = 'Successfully saved user flags! Updated session flags too!'
