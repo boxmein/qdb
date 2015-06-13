@@ -71,7 +71,7 @@ configure do
           flash[:error] = 'You aren\'t allowed to go here! :('
           redirect '/'
         end
-      end34
+      end
     end
 
     abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
