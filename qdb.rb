@@ -273,7 +273,7 @@ post '/user/change_pw', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
   if @user
     # Check that the old password is right
-    pw_hash = BCrypt::Password.new(@user.password)
+    pw_hash = BCrypt::Password.new(@user[:password])
 
     unless pw_hash == params[:password]
       flash[:error] = 'Invalid password!'
