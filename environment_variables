@@ -1,0 +1,17 @@
+#!/bin/bash
+# Set environment variables here BEFORE running `vagrant up`!
+# Or copy this to ~/.bash_profile later.
+
+# URL to access the database from
+export DATABASE_URL=postgres://localhost
+
+# https://www.google.com/recaptcha/admin#list
+# Recaptcha client key
+export RECAPTCHA_CLIENTKEY=
+# Recaptcha secret key
+export RECAPTCHA_SECRET=
+
+# Secret key for cookies. Keep this private or others can edit the session
+# data! Note that session data is used to keep track of user flags and other
+# stuff.
+export COOKIE_SECRET=
