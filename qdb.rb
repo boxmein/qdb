@@ -45,6 +45,15 @@ configure do
         return
       end
 
+      # Temporary auth golden key
+      if params[:golden_key]
+        if params[:golden_key] == ENV['GOLDEN_KEY']
+          # stop checking for authentication stuff here
+          puts "!!! Golden Key applied"
+          return
+        end
+      end
+
       curr_flags = session[:flags]
       auth_flags = settings.auth_flags
 
