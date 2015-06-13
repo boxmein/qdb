@@ -216,6 +216,14 @@ post '/user/register' do
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
+  # check username for existence
+  existing_user = User.where(:name => params[:user]).first
+  if existing_user
+    flash[:error] = 'This username is already in use. Try another one!'
+    redirect '/user/register'
+    return
+  end
+
   user = User.new params[:user]
 
   if user.save
