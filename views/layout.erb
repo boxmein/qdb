@@ -67,6 +67,25 @@
   <div class="container">
   <main>
     <a name="main" id="main" class="hidden"></a>
+    <% if flash[:error] %>
+    <div class="alert alert-danger">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <%= flash[:error] %>
+    </div>
+    <% end %>
+    <% if flash[:info] %>
+    <div class="alert alert-info">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <%= flash[:info] %>
+    </div>
+    <% end %>
+    <% if flash[:success] %>
+    <div class="alert alert-success">
+      <a class="close" data-dismiss="alert">&#215;</a>
+      <%= flash[:success] %>
+    </div>
+    <% end %>
+
     <%= yield %>
   </main>
   <footer>

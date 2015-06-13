@@ -5,6 +5,7 @@ require 'will_paginate/active_record'
 require './config/env'
 require 'sinatra/recaptcha'
 require 'bcrypt'
+require 'rack-flash'
 
 # wow models
 require './models/Quote'
@@ -13,6 +14,8 @@ require './models/User'
 abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
 use Rack::Session::Cookie, :expire_after => 604800,
                            :secret => ENV['COOKIE_SECRET']
+
+use Rack::Flash, :accessorize => [:info, :success, :error]
 
 configure do
   set :auth_flags, {
@@ -29,11 +32,15 @@ configure do
     condition do
       # new pseudo-role: logged_in
       if roles.include? :logged_in
-        redirect '/user/login' unless session[:username]
+        unless session[:username]
+          flash[:error] = 'You need to be logged in to go here.'
+          redirect '/user/login'
+        end
         return
       end
 
       unless session[:username]
+        flash[:error] = 'You need to be logged in to go here.'
         redirect '/user/login'
         return
       end
@@ -49,7 +56,10 @@ configure do
         flag_exists = (curr_flags & auth_flags[role]) != 0
         allowed = allowed && flag_exists
       end
-      redirect '/user/login' unless allowed
+      unless allowed
+        flash[:error] = 'You aren\'t allowed to go here! :('
+        redirect '/user/login'
+      end
     end
 
     abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
@@ -163,11 +173,12 @@ end
 
 post '/user/login' do
 
-  unless session.empty?
-    raise ErrLoggedIn
+  if session[:username] and session[:user_id] and session[:flags]
+    flash[:info] = 'You\'re already logged in!'
+    redirect '/'
   end
   unless params[:name] and params[:password]
-    raise ErrInvalidRequest
+    raise InvalidRequest, 'Missing parameters when trying to log in.'
   end
 
   user = User.where(name: params[:name]).first
@@ -180,10 +191,12 @@ post '/user/login' do
       session[:flags] = user[:flags]
       session[:user_id] = user[:id]
 
-      erb :'responses/success_logging_in'
+      flash[:success] = 'Successfully logged in!'
+      redirect '/'
 
     else
-      raise ClientError, "Wrong username or password. I won't tell which >:D"
+      flash[:error] = 'Invalid username or password.'
+      redirect '/user/login'
     end
   else
     404
@@ -197,7 +210,12 @@ end
 post '/user/register' do
 
   raise InvalidRequest unless params[:user] and params[:user][:name] and params[:user][:password]
-  raise ClientError, "You failed the captcha!" unless recaptcha_correct?
+
+  unless recaptcha_correct?
+    flash[:error] = 'You failed the recaptcha!'
+    redirect '/user/register'
+    return
+  end
 
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
@@ -207,7 +225,8 @@ post '/user/register' do
   if user.save
     erb :'responses/success_registering'
   else
-    raise RouteError, "Error while saving new user"
+    flash[:error] = 'Failed to save the user. Try again?'
+    redirect '/user/register'
   end
 end
 
@@ -226,9 +245,10 @@ get '/user/settings', :auth => [:logged_in] do
   end
 end
 
-get '/user/logout', :auth => [:logged_in] do
+get '/user/logout' do
   session.clear
-  erb :'responses/success_logging_out'
+  flash[:info] = 'You are now logged out!'
+  redirect '/'
 end
 
 get '/logout' do
@@ -250,15 +270,24 @@ post '/user/change_pw', :auth => [:logged_in] do
     # Check that the old password is right
     pw_hash = BCrypt::Password.new(@user.password)
 
-    raise ClientError, "Incorrect password!"   unless pw_hash == params[:password]
-    raise ErrPWMatch, "Passwords don't match!" unless params[:password] == params[:password_confirm]
+    unless pw_hash == params[:password]
+      flash[:error] = 'Invalid password!'
+      redirect '/user/change_pw'
+      return
+    end
+    unless params[:password] == params[:password_confirm]
+      flash[:error] = 'Your passwords didn\'t match!'
+      redirect '/user/change_pw'
+    end
 
     @user.password = BCrypt::Password.create(params[:password])
 
     if @user.save
-      erb :'responses/success_saving', locals: {thing: 'your new password'}
+      flash[:success] = 'Successfully changed your password!'
+      redirect '/user/settings'
     else
-      raise RouteError, "Error while saving new user"
+      flash[:error] = 'Error saving new user!'
+      redirect '/user/change_pw'
     end
   else
     404
@@ -274,7 +303,8 @@ post '/user/delete', :auth => [:logged_in] do
   if @user
     @user.destroy
     session.clear
-    erb :'responses/success_deleting_user'
+    flash[:success] = 'Successfully deleted your user!'
+    redirect '/'
   else
     404
   end
@@ -297,9 +327,11 @@ post '/user/:id/edit', :auth => [:edit_users] do
     @user.name = u[:name]
     @user.password = u[:password]
     if @user.save
-      erb :'responses/success_saving', locals: {thing: 'user', extra: u[:name]}
+      flash[:success] = 'Successfully edited the user!'
+      redirect '/user/list'
     else
-      raise RouteError, "Error while saving edited user"
+      flash[:error]  = 'Error saving the user!'
+      redirect request.path_info
     end
   else
     404
@@ -327,9 +359,11 @@ post '/quote/new', :auth => [:post_quotes] do
 
   if mdl.save
     logModAction(session[:username], ":post_quotes", mdl[:id])
+    flash[:success] = 'Successfully posted the new quote!'
     redirect '/quotes/'
   else
-    raise RouteError, "Error while saving new quote"
+    flash[:error]  = 'Error saving the new quote!'
+    redirect '/quotes/'
   end
 end
 
@@ -359,10 +393,14 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
     quote.quote  = params[:quote]
     if quote.save
       logModAction(session[:username], ":edit_quotes", params[:id].to_i)
+      flash[:success] = 'Successfully edited the quote'
       redirect "/quote/#{params[:id]}"
     else
-      raise RouteError, "Error while saving edited quote"
+      flash[:error] ='Failed to save the new quote. Try again..?'
+      redirect "/quote/#{params[:id]}/edit"
     end
+  else
+    404
   end
 end
 
@@ -385,9 +423,10 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
   if quote
     logModAction(session[:username], ":delete_quotes", params[:id].to_i)
     quote.destroy
-    erb "<h2> Destroyed quote #{params[:id]} successfully. </h2>"
+    flash[:success] = 'Quote destroyed successfully.'
+    redirect '/quotes/'
   else
-    raise RouteError, "Error while deleting quote"
+    404
   end
 end
 
@@ -396,9 +435,11 @@ post '/quote/:id/approve', :auth => [:approve_quotes] do
   if quote
     quote.approved = true
     if quote.save
-      erb :'responses/success_saving', locals: {thing: 'quote', extra: params[:id]}
+      flash[:success] = 'Successfully approved this quote!'
+      redirect '/moderate/queue'
     else
-      raise RouteError, "Error while saving new approved quote"
+      flash[:error] = 'Error approving this quote.'
+      redirect '/moderate/queue'
     end
   else
     404
@@ -433,9 +474,11 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
     user[:flags] = params[:flags].to_i
     if user.save
       logModAction(session[:username], ":set_flags","#{params[:id]} -> #{user[:flags]}")
-      erb :'responses/success_saving', locals: {thing: 'user flags for', extra: user[:name]}
+      flash[:success] = 'Successfully saved user flags!'
+      redirect '/user/list'
     else
-      raise RouteError, "Error while saving"
+      flash[:error] = 'Failed to save user flags!'
+      redirect '/user/list'
     end
   else
     404
