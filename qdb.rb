@@ -443,7 +443,7 @@ end
 
 # Moderation queue
 get '/moderate/queue', :auth => [:approve_quotes] do
-  @quotes = Quote.where(:approved => false)
+  @quotes = Quote.where(:approved => false).order(:id).page(params[:page])
   erb :'mod/approve_queue'
 end
 
