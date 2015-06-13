@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'Bitstream Vera Sans Mono';
+  src: url("VeraMono/VeraMono-webfont.eot");
+  src: url("VeraMono/VeraMono-webfont.eot?#iefix") format("embedded-opentype"), url("VeraMono/VeraMono-webfont.woff") format("woff"), url("VeraMono/VeraMono-webfont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+textarea.actual-quote {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  min-height: 300px; }
+
+.users .user > .name, .users .user > .flags, .users .user > .id {
+  font-weight: bold; }
+
+.navbar {
+  min-height: 20px; }
+
+.navbar .navbar-brand {
+  padding: 5px;
+  line-height: 20px;
+  height: 30px; }
+
+.navbar .navbar-nav > li > a {
+  line-height: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  transition: background-color 0.1s ease; }
+
+.navbar .navbar-text {
+  margin: 0;
+  padding: 5px;
+  line-height: 20px; }
+
+.container {
+  max-width: 600px; }
+
+.actual-quote {
+  white-space: pre-line;
+  overflow: auto;
+  font-family: "Bitstream Vera Sans Mono", monospace;
+  font-size: 12px; }
+
+.navbar .navbar-text a {
+  color: white; }
+
+/*# sourceMappingURL=index.css.map */
