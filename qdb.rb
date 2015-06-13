@@ -223,7 +223,8 @@ post '/user/register' do
   user = User.new params[:user]
 
   if user.save
-    erb :'responses/success_registering'
+    flash[:success] = 'Successfully registered! You can now log in.'
+    redirect '/user/login'
   else
     flash[:error] = 'Failed to save the user. Try again?'
     redirect '/user/register'
