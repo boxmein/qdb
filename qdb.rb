@@ -50,6 +50,10 @@ configure do
         if params[:golden_key] == ENV['GOLDEN_KEY']
           # stop checking for authentication stuff here
           puts "!!! Golden Key applied"
+        else
+          puts "Invalid golden key"
+          flash[:error] = 'eww invalid'
+          redirect '/'
         end
       else
         curr_flags = session[:flags]
@@ -65,9 +69,9 @@ configure do
         end
         unless allowed
           flash[:error] = 'You aren\'t allowed to go here! :('
-          redirect '/user/login'
+          redirect '/'
         end
-      end
+      end34
     end
 
     abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
