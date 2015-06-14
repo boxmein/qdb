@@ -178,6 +178,9 @@ post '/user/login' do
     raise InvalidRequest, 'Missing parameters when trying to log in.'
   end
 
+  # process the username a bit
+  params[:name].strip!
+
   user = User.where(name: params[:name]).first
 
   if user
