@@ -129,7 +129,8 @@ get '/quote/:id' do
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
     erb :'quote/view'
   else
-    404
+    flash[:error] = 'There is no quote with this ID!'
+    redirect '/quotes/'
   end
 end
 
@@ -195,7 +196,8 @@ post '/user/login' do
       redirect '/user/login'
     end
   else
-    404
+    flash[:error] = 'No such user!'
+    redirect '/user/login'
   end
 end
 
@@ -287,7 +289,7 @@ post '/user/change_pw', :auth => [:logged_in] do
           flash[:success] = 'Successfully changed your password!'
           redirect '/user/settings'
         else
-          flash[:error] = 'Error saving new user!'
+          flash[:error] = 'Error while saving the password!'
           redirect '/user/change_pw'
         end
       end
@@ -336,11 +338,12 @@ post '/user/:id/edit', :auth => [:edit_users] do
       flash[:success] = 'Successfully edited the user!'
       redirect '/user/list'
     else
-      flash[:error]  = 'Error saving the user!'
+      flash[:error] = 'Error saving the user!'
       redirect request.path_info
     end
   else
-    404
+    flash[:error] = 'No such user!'
+    redirect request.path_info
   end
 end
 
@@ -384,7 +387,8 @@ get '/quote/:id/edit', :auth => [:edit_quotes] do
   if @quote
     erb :'quote/edit'
   else
-    404
+    flash[:error] = 'No such quote!'
+    redirect "/quote/#{params[:id]}"
   end
 end
 
@@ -406,7 +410,8 @@ post '/quote/:id/edit', :auth => [:edit_quotes] do
       redirect "/quote/#{params[:id]}/edit"
     end
   else
-    404
+    flash[:error] = 'No such quote!'
+    redirect "/quote/#{params[:id]}"
   end
 end
 
@@ -418,7 +423,8 @@ get '/quote/:id/delete', :auth => [:delete_quotes] do
   if @quote
     erb :'quote/delete'
   else
-    404
+    flash[:error] = 'No such quote!'
+    redirect '/quotes/'
   end
 end
 
@@ -432,7 +438,8 @@ post '/quote/:id/delete', :auth => [:delete_quotes] do
     flash[:success] = 'Quote destroyed successfully.'
     redirect '/quotes/'
   else
-    404
+    flash[:error] = 'No such quote!'
+    redirect '/quotes/'
   end
 end
 
@@ -448,7 +455,8 @@ post '/quote/:id/approve', :auth => [:approve_quotes] do
       redirect '/moderate/queue'
     end
   else
-    404
+    flash[:error] = 'No such quote!'
+    redirect '/moderate/queue'
   end
 end
 
@@ -487,7 +495,8 @@ post '/user/:id/set_flags', :auth => [:set_flags] do
       redirect '/user/list'
     end
   else
-    404
+    flash[:error] = 'No such user!'
+    redirect '/user/list'
   end
 end
 
