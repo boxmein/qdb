@@ -2,3 +2,8 @@
 
 ## Version 1.0.0: Initial Release (13 June 2015) ##
 
+* Deployed to Heroku
+* Added Heroku cruft
+* Made a bunch of config options into environment variables
+* Information is passed to the user with flashes (`Rack::Flash`)
+* Immediate bugs are patched
