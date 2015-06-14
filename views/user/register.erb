@@ -1,14 +1,35 @@
 <h2>Register</h2>
+<% if @loggedIn %>
+<div class="alert alert-info">
+  You should note that you <em>are</em> actually logged in already. Log out if
+  you want to swap users!
+</div>
+<% end %>
 <div class="alert alert-warning alert-https" style="display: none">
   Note: this page is <em>not</em> served over HTTPS. Anyone listening in on
   your network traffic will see the password in plain text. Make sure you use
   an uncommon password.
 </div>
-<form method="POST" action="/user/register">
-  <input type="text" name="user[name]" placeholder="Username">
-  <input type="password" name="user[password]" placeholder="Password">
-  <input type="submit" value="Register">
+
+<form method="POST" action="/user/register" class="form-inline">
+  <div class="control-group">
+    <label for="user[name]" class="control-label col-md-3">Username</label>
+    <div class="col-md-7">
+      <input class="form-control" type="text" name="user[name]" placeholder="Username">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label for="user[password]" class="control-label col-md-3">Password</label>
+    <div class="col-md-7">
+      <input class="form-control" type="password" name="user[password]" placeholder="Password">
+    </div>
+  </div>
+  <!-- ewww wtf tables -->
   <%= recaptcha %>
+  <div class="col-md-7 col-md-offset-3">
+    <input type="submit" class="btn btn-primary btn-large" value="Register">
+  </div>
 </form>
 
 <script>window.addEventListener('load', function() {
