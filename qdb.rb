@@ -36,13 +36,13 @@ configure do
           flash[:error] = 'You need to be logged in to go here.'
           redirect '/user/login'
         end
-        return
+        break
       end
 
       unless session[:username]
         flash[:error] = 'You need to be logged in to go here.'
         redirect '/user/login'
-        return
+        break
       end
 
       curr_flags = session[:flags]
@@ -210,7 +210,7 @@ post '/user/register' do
   unless recaptcha_correct?
     flash[:error] = 'You failed the recaptcha!'
     redirect '/user/register'
-    return
+    break
   end
 
   params[:user][:flags] = 0
@@ -221,7 +221,7 @@ post '/user/register' do
   if existing_user
     flash[:error] = 'This username is already in use. Try another one!'
     redirect '/user/register'
-    return
+    break
   end
 
   user = User.new params[:user]
