@@ -10,20 +10,18 @@ Bundler for the rubygem dependencies.
 Before actually running the code, you should set up a few environment variables.
 Check out the file `environment_variables` and assign values to everything.
 
-Here's the long and *utterly* tedious process you need to pass to get this up
-and running:
+If you're using Heroku, copy-paste the file `environment_variables` into `.env`
+which will then let you run the app locally using `foreman start web`.
 
-```ruby
-bundle install
-ruby qdb.rb
-```
+Alternatively, set the same environment variables in a manner of your choosing
+and run `bundle exec rackup config.ru` or `ruby qdb.rb`, whichever one you like
+more.
 
 
 ## Dev environment
 
-Here's a quick dev environment: run `vagrant up`. Don't forget to set up the
-environment variables first! The file will be copied onto `~/.bash_profile` on
-the Vagrant VM.
+Here's a quick dev environment: run `vagrant up`. It will setup an Ubuntu 14.04
+VM with the required packages, tools as well as the Heroku Toolbelt installed.
 
 ## Contributing
 
