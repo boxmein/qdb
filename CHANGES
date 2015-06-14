@@ -1,5 +1,11 @@
 # Changelog #
 
+## Version 1.0.1 ##
+
+* Adapted more to Heroku-style development
+* Added a procfile, made launching compatible with Foreman
+* Vagrantfile also forwards the Foreman port (5000) now
+
 ## Version 1.0.0: Initial Release (13 June 2015) ##
 
 * Deployed to Heroku
