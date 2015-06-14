@@ -6,6 +6,11 @@
     you want to swap users!
   </div>
   <% end %>
+  <div class="alert alert-warning alert-https" style="display: none">
+    Note: this page is <em>not</em> served over HTTPS. Anyone listening in on
+    your network traffic will see the password in plain text. Make sure you use
+    an uncommon password.
+  </div>
   <div class="form-group">
     <label class="control-label col-md-2" for="Username">Username</label>
     <div class="col-md-6">
@@ -25,3 +30,10 @@
     </div>
   </div>
 </form>
+
+<script>window.addEventListener('load', function() {
+  'use strict';
+  if (window.location.protocol !== 'https:') {
+    $('.alert-https').attr('style', '');
+  }
+});</script>

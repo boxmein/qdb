@@ -1,4 +1,9 @@
 <h2>Register</h2>
+<div class="alert alert-warning alert-https" style="display: none">
+  Note: this page is <em>not</em> served over HTTPS. Anyone listening in on
+  your network traffic will see the password in plain text. Make sure you use
+  an uncommon password.
+</div>
 <form method="POST" action="/user/register">
   <input type="text" name="user[name]" placeholder="Username">
   <input type="password" name="user[password]" placeholder="Password">
@@ -6,3 +11,9 @@
   <%= recaptcha %>
 </form>
 
+<script>window.addEventListener('load', function() {
+  'use strict';
+  if (window.location.protocol !== 'https:') {
+    $('.alert-https').attr('style', '');
+  }
+});</script>
