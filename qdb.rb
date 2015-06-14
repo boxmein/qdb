@@ -174,6 +174,7 @@ post '/user/login' do
     flash[:info] = 'You\'re already logged in!'
     redirect '/'
   end
+
   unless params[:name] and params[:password]
     raise InvalidRequest, 'Missing parameters when trying to log in.'
   end
@@ -184,9 +185,7 @@ post '/user/login' do
   user = User.where(name: params[:name]).first
 
   if user
-    pw_hash = BCrypt::Password.new (user[:password])
-
-    if pw_hash == params[:password]
+    if user.pw == params[:password]
       session[:username] = user[:name]
       session[:flags] = user[:flags]
       session[:user_id] = user[:id]
@@ -218,6 +217,7 @@ post '/user/register' do
     break
   end
 
+  params[:user][:name].strip!
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
@@ -277,17 +277,13 @@ end
 post '/user/change_pw', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
   if @user
-    # Check that the old password is right
-    pw_hash = BCrypt::Password.new(@user[:password])
+    if @user.pw == params[:old_password]
 
-    if pw_hash == params[:password]
-
-      if params[:password] == params[:password_confirm]
+      if params[:old_password] == params[:password_confirm]
         flash[:error] = 'Your passwords didn\'t match!'
         redirect '/user/change_pw'
       else
-        @user[:password] = BCrypt::Password.create(params[:password])
-
+        @user.pw = params[:password]
         if @user.save
           flash[:success] = 'Successfully changed your password!'
           redirect '/user/settings'
