@@ -14,7 +14,7 @@ Bundler for the rubygem dependencies.
 
     $ vim environment_variables
     $ cp environment_variables .env
-    $ rake db:migrate
+    $ rake db:schema:load
     $ foreman start web 
 
 **TL;DR** without Heroku Toolbelt:
@@ -22,7 +22,7 @@ Bundler for the rubygem dependencies.
     $ vim environment_variables
     $ cat environment_variables | sed "s/^/export /g" > env.sh
     $ source env.sh
-    $ rake db:migrate
+    $ rake db:schema:load
     -- and then pick one from the following: --
     $ ruby qdb.rb 
     $ bundle exec rackup config.ru
@@ -49,15 +49,15 @@ itself.
 Once you've got everything else setup, let Rake take care of creating the tables 
 and setting up the indices for the app. 
 
-    $ rake db:migrate
+    $ rake db:schema:load
 
 It should run perfectly fine. If, on the other hand, you get some unpredictable error
 about existing tables, then run the following command to drop the database containing
 qdb tables:
 
-    $ rake db:drop
+    $ rake db:reset
 
-After that, feel free to do `rake db:migrate` to get your database in order.
+After that, feel free to do `rake db:schema:load` to get your database in order.
 
 ### Actually Running
 
@@ -100,9 +100,11 @@ close attention because it migth be a bit long-winded.
 
     $ git push heroku master
 
-Don't forget to run a database migration too:
+Don't forget to run a database schema load too:
 
-    $ heroku run rake db:migrate
+    $ heroku run rake db:schema:load
+
+(Note: every time you modify the database via a rake migration, you must `rake db:migrate` the remote end too!) 
 
 And, after all this toil and trouble, your app is running on Heroku! Try the 
 following command to open a browser with the app deployed.
