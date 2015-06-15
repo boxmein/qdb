@@ -1,5 +1,11 @@
 # Changelog #
 
+## Version 1.0.2 ##
+
+* Lots of XSS fixes, holy crap
+* Moved HTML escaping to before-save, instead of before-render
+* Forms are now validated way more thoroughly (Thanks ActiveModel!)
+
 ## Version 1.0.1 ##
 
 * Adapted more to Heroku-style development
