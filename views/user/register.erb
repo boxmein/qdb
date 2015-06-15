@@ -14,8 +14,15 @@
 <form method="POST" action="/user/register" class="form-inline">
   <div class="control-group">
     <label for="user[name]" class="control-label col-md-3">Username</label>
+
     <div class="col-md-7">
       <input class="form-control" type="text" name="user[name]" placeholder="Username">
+      <% if @errors and @errors[:name] and @errors[:name].length > 0 %>
+      <%    @errors[:name].each do |v| %>
+        <br /><span class="text-danger">- <%= v %></span>
+      <%    end %>
+      <% end %>
+
     </div>
   </div>
 
@@ -23,6 +30,11 @@
     <label for="user[password]" class="control-label col-md-3">Password</label>
     <div class="col-md-7">
       <input class="form-control" type="password" name="user[password]" placeholder="Password">
+      <% if @errors and @errors[:password] and @errors[:password].length > 0 %>
+      <%    @errors[:password].each do |v| %>
+        <br /><span class="text-danger">- <%= v %></span>
+      <%    end %>
+      <% end %>
     </div>
   </div>
   <!-- ewww wtf tables -->
