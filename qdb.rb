@@ -221,22 +221,21 @@ post '/user/register' do
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
-  # check username for existence
-  existing_user = User.where(:name => params[:user][:name]).first
-  if existing_user
-    flash[:error] = 'This username is already in use. Try another one!'
-    redirect '/user/register'
-    break
-  end
+  # username checking is now in models/User
 
   user = User.new params[:user]
 
-  if user.save
-    flash[:success] = 'Successfully registered! You can now log in.'
-    redirect '/user/login'
+  unless user.invalid?
+    if user.save
+      flash[:success] = 'Successfully registered! You can now log in.'
+      redirect '/user/login'
+    else
+      flash[:error] = 'Failed to save the user. Try again?'
+      redirect '/user/register'
+    end
   else
-    flash[:error] = 'Failed to save the user. Try again?'
-    redirect '/user/register'
+    @errors = user.errors.messages
+    erb :'user/register'
   end
 end
 
@@ -331,7 +330,7 @@ post '/user/:id/edit', :auth => [:edit_users] do
   if @user
     u = params[:user]
     @user.id = u[:id]
-    @user.name = u[:name]
+    @user.name = esc u[:name]
     @user.password = u[:password]
     if @user.save
       flash[:success] = 'Successfully edited the user!'
@@ -360,8 +359,8 @@ post '/quote/new', :auth => [:post_quotes] do
 
   # no double escaping now!
   # make sure that quote.erb et al keep esc()ing the input then
-  # q[:quote]  = esc(q[:quote])
-  q[:author] = session[:username]
+  q[:quote]  = esc q[:quote]
+  q[:author] = esc session[:username]
 
   mdl = Quote.new q
 
@@ -392,14 +391,13 @@ get '/quote/:id/edit', :auth => [:edit_quotes] do
 end
 
 post '/quote/:id/edit', :auth => [:edit_quotes] do
-  unless params[:author] and params[:quote]
+  raise InvalidRequest unless params[:author] and params[:quote]
 
-  end
   quote = Quote.find(params[:id].to_i)
 
   if quote
-    quote.author = params[:author]
-    quote.quote  = params[:quote]
+    quote.author = esc params[:author]
+    quote.quote  = esc params[:quote]
     if quote.save
       logModAction(session[:username], ":edit_quotes", params[:id].to_i)
       flash[:success] = 'Successfully edited the quote'
