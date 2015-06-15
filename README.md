@@ -10,7 +10,23 @@ Quote Database Engine in Ruby / Sinatra.
 **You need to have:** Postgres, Ruby ~1.9.1, `ruby-dev` (for a few modules) and
 Bundler for the rubygem dependencies.
 
+**TL;DR*** with Heroku Toolbelt:
 
+    $ vim environment_variables
+    $ cp environment_variables .env
+    $ rake db:migrate
+    $ foreman start web 
+
+**TL;DR** without Heroku Toolbelt:
+
+    $ vim environment_variables
+    $ cat environment_variables | sed "s/^/export /g" > env.sh
+    $ source env.sh
+    $ rake db:migrate
+    -- and then pick one from the following: --
+    $ ruby qdb.rb 
+    $ bundle exec rackup config.ru
+    
 ### Environment variables
 
 Before actually running the code, you should set up a few environment variables.
@@ -28,6 +44,20 @@ itself.
 
 [gr]: https://www.google.com/recaptcha/admin
 
+### Setting up the tables
+
+Once you've got everything else setup, let Rake take care of creating the tables 
+and setting up the indices for the app. 
+
+    $ rake db:migrate
+
+It should run perfectly fine. If, on the other hand, you get some unpredictable error
+about existing tables, then run the following command to drop the database containing
+qdb tables:
+
+    $ rake db:drop
+
+After that, feel free to do `rake db:migrate` to get your database in order.
 
 ### Actually Running
 
@@ -69,6 +99,10 @@ close attention because it migth be a bit long-winded.
 ### Pushing the code
 
     $ git push heroku master
+
+Don't forget to run a database migration too:
+
+    $ heroku run rake db:migrate
 
 And, after all this toil and trouble, your app is running on Heroku! Try the 
 following command to open a browser with the app deployed.
