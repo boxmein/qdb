@@ -10,7 +10,7 @@
     <% @users.each do |user| %>
     <tr>
       <td><%= user.id %></td>
-      <td><%= user.name %></td>
+      <td><%= esc user.name %></td>
       <td><%= user.flags %><% if @userFlags.include? :set_flags %>
             <a href="/user/<%= user.id %>/set_flags">(set)</a>
           <% end %></td>

@@ -1,7 +1,7 @@
 <div class="well">
   <p>Note: this page is private.</p>
 
-  <h2>User <%= @user.name %> (User ID <%= @user.id %>)</h2>
+  <h2>User <%= esc @user.name %> (User ID <%= @user.id %>)</h2>
 
   <h3>Permissions</h3>
 

@@ -1,11 +1,11 @@
 <div class="well clearfix">
-  <h2>Edit User <%= @user.name %> #<%= @user.id %></h2>
+  <h2>Edit User <%= esc @user.name %> #<%= @user.id %></h2>
 
   <form method="POST" action="/user/<%= @user.id %>/edit" class="form-horizontal">
     <div class="control-group">
       <label for="user[name]" class="control-label col-md-4">Username</label>
       <div class="col-md-8">
-        <input class="form-control" type="text" name="user[name]" placeholder="Username" value="<%= @user.name %>">
+        <input class="form-control" type="text" name="user[name]" placeholder="Username" value="<%= esc @user.name %>">
       </div>
     </div>
 
