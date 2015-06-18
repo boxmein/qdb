@@ -127,7 +127,7 @@ get '/quote/:id' do
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
-    erb :'quote/view'
+    erb :'quote/quote_view'
   else
     flash[:error] = 'There is no quote with this ID!'
     redirect '/quotes/'

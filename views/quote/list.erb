@@ -1,12 +1,9 @@
 <h1>#powder Quote Database (qdb)</h1>
 
 <div class="quotes">
-  <% @quotes.each do |q| %>
-  <div class="quote well">
-    <h4>Quote <a href="/quote/<%=q.id%>">#<%=q.id%></a> by <%=q.author%></h4>
-    <div class="actual-quote"> <%= q.quote %> </div>
-  </div>
+  <% @quotes.each do |q|
+       @quote = q
+  %><%= erb :'quote/quote_view' %>
   <% end %>
-
   <% will_paginate @quotes unless @quotes.empty? %>
 </div>

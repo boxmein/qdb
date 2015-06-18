@@ -1,0 +1,20 @@
+<div class="quote well">
+  <div class="actual-quote"> <%= @quote.quote %> </div>
+
+  <% if @viewPage and @loggedIn %>
+
+  <%    if @userFlags.include?(:edit_quotes) %>
+  <a href="/quote/<%= @quote.id %>/edit">(edit)</a>
+  <%    end %>
+  <%    if @userFlags.include?(:delete_quotes) %>
+  <a href="/quote/<%= @quote.id %>/delete">(delete)</a>
+  <%    end %>
+
+  <% end %>
+  <div class="metadata-bar">
+    <div class="upvotes">^</div>
+    <div class="downvotes">v</div>
+    <div class="id">#<%= @quote.id %></div>
+    <div class="author">from <%= @quote.author %></div>
+  </div>
+</div>
