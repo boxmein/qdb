@@ -1,9 +1,8 @@
-<div class="quote well">
+<div class="quote well" data-id="<%=@quote.id%>">
   <div class="actual-quote"> <%= @quote.quote %> </div>
 
   <div class="metadata-bar">
     <div class="upvotes">&and; 0</div> /
-    <div class="downvotes">&or; 0</div> /
     <div class="id"><a href="/quote/<%=@quote.id%>">#<%= @quote.id %></a></div>
     <% if @loggedIn %>
     <%    if @userFlags.include?(:edit_quotes) %>
