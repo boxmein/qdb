@@ -13,6 +13,30 @@ textarea.actual-quote {
 .users .user > .name, .users .user > .flags, .users .user > .id {
   font-weight: bold; }
 
+.metadata-bar div {
+  display: inline-block;
+  padding: 2px; }
+.metadata-bar .upvotes {
+  color: #17BD51;
+  cursor: pointer; }
+.metadata-bar .upvotes:hover {
+  border-radius: 2px;
+  color: #23e466;
+  box-shadow: 0px 0px 4px #999; }
+.metadata-bar .upvotes.voted {
+  background-color: #17BD51;
+  color: white; }
+.metadata-bar .downvotes {
+  color: #E31B1B;
+  cursor: pointer; }
+.metadata-bar .downvotes:hover {
+  border-radius: 2px;
+  color: #e94848;
+  box-shadow: 0px 0px 4px #999; }
+.metadata-bar .downvotes.voted {
+  background-color: #E31B1B;
+  color: white; }
+
 .navbar {
   min-height: 20px; }
 
@@ -43,8 +67,5 @@ textarea.actual-quote {
 
 .navbar .navbar-text a {
   color: white; }
-
-.metadata-bar div {
-  display: inline-block; }
 
 /*# sourceMappingURL=index.css.map */

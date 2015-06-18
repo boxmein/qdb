@@ -17,8 +17,43 @@ textarea.actual-quote {
 }
 
 // Quote Metadata
-.metadata-bar div {
-  display: inline-block;
+.metadata-bar {
+  div {
+    display: inline-block;
+    padding: 2px;
+  }
+
+  .upvotes {
+    color: $upvoteGreen;
+    cursor: pointer;
+  }
+
+  .upvotes:hover {
+    border-radius: 2px;
+    color: lighten($upvoteGreen, 10%);
+    box-shadow: 0px 0px 4px #999;
+  }
+
+  .upvotes.voted {
+    background-color: $upvoteGreen;
+    color: white;
+  }
+
+  .downvotes {
+    color: $downvoteRed;
+    cursor: pointer;
+  }
+
+  .downvotes:hover {
+    border-radius: 2px;
+    color: lighten($downvoteRed, 10%);
+    box-shadow: 0px 0px 4px #999;
+  }
+
+  .downvotes.voted {
+    background-color: $downvoteRed;
+    color: white;
+  }
 }
 
 // Overriding Bootstrap crap
