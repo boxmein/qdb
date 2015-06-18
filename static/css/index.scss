@@ -16,6 +16,11 @@ textarea.actual-quote {
   font-weight: bold;
 }
 
+// Quote Metadata
+.metadata-bar div {
+  display: inline-block;
+}
+
 // Overriding Bootstrap crap
 .navbar {
   min-height: 20px;

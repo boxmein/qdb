@@ -44,4 +44,7 @@ textarea.actual-quote {
 .navbar .navbar-text a {
   color: white; }
 
+.metadata-bar div {
+  display: inline-block; }
+
 /*# sourceMappingURL=index.css.map */
