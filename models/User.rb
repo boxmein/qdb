@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   validates :name, uniqueness: {case_sensitive: false, message: 'The username has already been taken! Try another one!'}
   validates :flags, numericality: {only_integer: true, message: 'The new flags were not a valid number.'}
 
+  has_many :votes, :through => :votes
+
   def pw
     @pw ||= BCrypt::Password.new self.password
   end
