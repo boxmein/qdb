@@ -31,12 +31,7 @@ textarea.actual-quote {
   .upvotes:hover {
     border-radius: 2px;
     color: lighten($upvoteGreen, 10%);
-    box-shadow: 0px 0px 4px #999;
-  }
-
-  .upvotes.voted {
-    background-color: $upvoteGreen;
-    color: white;
+    text-decoration: underline;
   }
 
   .downvotes {
@@ -47,12 +42,11 @@ textarea.actual-quote {
   .downvotes:hover {
     border-radius: 2px;
     color: lighten($downvoteRed, 10%);
-    box-shadow: 0px 0px 4px #999;
+    text-decoration: underline;
   }
 
-  .downvotes.voted {
-    background-color: $downvoteRed;
-    color: white;
+  .voted {
+    font-weight: bold;
   }
 }
 
