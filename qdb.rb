@@ -10,6 +10,7 @@ require 'rack-flash'
 # wow models
 require './models/Quote'
 require './models/User'
+require './models/Vote'
 
 abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
 use Rack::Session::Cookie, :expire_after => 604800,
@@ -25,7 +26,8 @@ configure do
     :list_users => 8,
     :approve_quotes => 16,
     :set_flags => 32,
-    :edit_users => 64
+    :edit_users => 64,
+    :can_vote => 128
   }
 
   set(:auth) do |*roles|
@@ -57,8 +59,13 @@ configure do
         allowed = allowed && flag_exists
       end
       unless allowed
-        flash[:error] = 'You aren\'t allowed to go here! :('
-        redirect '/'
+        if request.xhr?
+          status 401
+          body 'You are not allowed to do this. :('
+        else
+          flash[:error] = 'You aren\'t allowed to go here! :('
+          redirect '/'
+        end
       end
     end
 
@@ -203,6 +210,10 @@ post '/user/login' do
   end
 end
 
+#
+# Registrations
+#
+
 get '/user/register' do
   erb :'user/register'
 end
@@ -242,6 +253,10 @@ end
 get '/register' do
   redirect '/user/register'
 end
+
+#
+# User management
+#
 
 # Users can only view their own settings
 get '/user/settings', :auth => [:logged_in] do
@@ -503,6 +518,45 @@ get '/moderate/queue', :auth => [:approve_quotes] do
   erb :'mod/approve_queue'
 end
 
+#
+# Voting
+#
+
+post '/upvote/:id', :auth => :can_vote do
+  quote = Quote.find(params[:id])
+  user = User.find(session[:user_id])
+
+  puts "Upvoting a quote"
+  p quote
+  p user
+
+  if quote
+    v = Vote.new
+    v[:quote_id] = quote[:id]
+    v[:user_id] = user[:id]
+    if v.save
+      quote[:upvotes] = quote.voters.length
+      status 200
+      body quote[:upvotes]
+    else
+      if request.xhr?
+        status 500
+        body "Save failed!"
+      else
+        flash[:error] = "Saving the vote failed :("
+        redirect "/quote/#{params[:id]}"
+      end
+    end
+  else
+    if request.xhr?
+      status 404
+      body "No such quote!"
+    else
+      flash[:error] = 'No such quote!'
+      redirect '/quotes/'
+    end
+  end
+end
 
 #
 # Errors
