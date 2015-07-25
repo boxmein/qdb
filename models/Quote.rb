@@ -1,5 +1,6 @@
 class Quote < ActiveRecord::Base
   validates :quote, presence: true
   validates :quote, length: {maximum: 1000}
-  has_many :voters, :through => :votes, :class_name => 'User'
+  has_many :votes
+  has_many :voters, :through => :votes, source: :user, :class_name => 'User'
 end
