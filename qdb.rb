@@ -194,6 +194,9 @@ end
 get '/quote/:id' do
   pass if params[:id] == 'new'
   @quote = Quote.where(:id => params[:id].to_i).first
+  
+  user = User.where(name: session[:username]).first
+  @voted = Vote.where(quote: @quote, user: user).first.size != 0
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
@@ -214,6 +217,10 @@ end
 get '/quotes/' do
   page = params[:page] == 0 ? 1 : params[:page]
   @quotes = Quote.where(:approved => true).page(params[:page])
+  user = User.where(name: session[:username]).first
+  @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
+  puts "quotes the user has voted on"
+  p @votedQuotes
   erb :'quote/list'
 end
 
@@ -454,6 +461,7 @@ post '/quote/new', :auth => [:post_quotes] do
   # make sure that quote.erb et al keep esc()ing the input then
   q[:quote]  = esc q[:quote]
   q[:author] = esc session[:username]
+  q[:upvotes] = 0
 
   mdl = Quote.new q
 
@@ -610,7 +618,8 @@ post '/upvote/:id', :auth => [:can_vote] do
 
     existing_vote = Vote.where(:quote => quote, :user => user)
 
-    unless existing_vote.nil?
+    unless existing_vote.size == 0
+      puts "found existing vote on #{quote.id} by #{user.id}, skipping"
       status 401
       if request.xhr?
         body(JSON.fast_generate({success: false, votes_now: quote.upvotes, quote_id: quote.id, err: "VOTED_ALREADY"}))
@@ -624,16 +633,19 @@ post '/upvote/:id', :auth => [:can_vote] do
     v = Vote.new
     v.quote = quote
     v.user = user
+    
 
     if v.save
-      
       quote.upvotes = quote.voters.size
-
-      status 200
-      if request.xhr?
-        body(JSON.fast_generate({success: true, votes_now: quote.upvotes, quote_id: quote.id}))
+      if quote.save
+        status 200
+        if request.xhr?
+          body(JSON.fast_generate({success: true, votes_now: quote.upvotes, quote_id: quote.id}))
+        else
+          redirect '/quotes/'
+        end
       else
-        redirect '/quotes/'
+        puts "failed to update upvote count, but vote object still remains!"
       end
     else
       if request.xhr?
