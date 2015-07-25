@@ -255,14 +255,14 @@ post '/user/login' do
       session[:user_id] = user[:id]
 
       flash[:success] = 'Successfully logged in!'
-      redirect '/'
+      redirect (req.params[:next] ? req.params[:next] : '/')
 
     else
       flash[:error] = 'Invalid username or password.'
       redirect '/user/login'
     end
   else
-    flash[:error] = 'No such user!'
+    flash[:error] = 'Invalid username or password.'
     redirect '/user/login'
   end
 end
