@@ -286,6 +286,7 @@ end
 #
 
 get '/user/register' do
+  response.headers['Content-Security-Policy'] = ''
   erb :'user/register'
 end
 
