@@ -3,6 +3,7 @@
 <div class="alert alert-danger">Really delete this quote?</div>
 
 <form method="POST" action="/quote/<%=@quote.id%>/delete">
+  <%= Rack::Csrf.tag env %>
   <input type="submit" class="btn btn-large btn-danger" value="Yeah">
 </form>
 

@@ -8,5 +8,7 @@ rid qdb of your user for good.</p>
 <p>(well, you can just press the back button, but that's beside the point)</p>
 
 <form action="/user/delete" method="POST">
-  <input type="submit" class="btn btn-danger btn-large" value="Delete">
+  <%= Rack::Csrf.tag env %>
+  <input type="submit" class="btn btn-danger btn-large" value="Delete"
+         onsubmit="return confirm('I lied. That was the second to last click. This is the last click. \nDo you want to delete your account?');">
 </form>

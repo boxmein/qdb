@@ -12,6 +12,7 @@
 </div>
 
 <form method="POST" action="/user/register" class="form-inline">
+  <%= Rack::Csrf.tag env %>
   <div class="control-group">
     <label for="user[name]" class="control-label col-md-3">Username</label>
 

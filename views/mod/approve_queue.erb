@@ -7,6 +7,7 @@
     <div class="approved">Approved: <%= quote.approved %></div>
     <div class="actual-quote"> <%= esc quote.quote %> </div>
     <form class="form-inline" style="display: inline-block" method="POST" action="/quote/<%=quote.id%>/approve">
+      <%= Rack::Csrf.tag env %>
       <input type="submit" class="btn btn-primary" value="Approve">
     </form>
     <% if @userFlags.include?(:edit_quotes) %>
