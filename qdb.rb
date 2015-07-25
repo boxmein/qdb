@@ -101,7 +101,7 @@ configure do
           redirect '/user/login?' + Rack::Utils.build_query({ :next => request.path })
         else
           status 401
-          body(JSON.fast_generate({success: false, err: 'NOT_LOGGED_IN'})
+          body(JSON.fast_generate({success: false, err: 'NOT_LOGGED_IN'}))
         end
         break
       end
@@ -242,7 +242,7 @@ post '/user/login' do
 
   if session[:username] and session[:user_id] and session[:flags]
     flash[:info] = 'You\'re already logged in!'
-    redirect (req.params[:next] ? req.params[:next] : '/')
+    redirect(request.params[:next] ? request.params[:next] : '/')
   end
 
   unless params[:name] and params[:password]
@@ -262,7 +262,7 @@ post '/user/login' do
       session[:timestamp] = Time.now.to_i
 
       flash[:success] = 'Successfully logged in!'
-      redirect (req.params[:next] ? req.params[:next] : '/')
+      redirect(request.params[:next] ? request.params[:next] : '/')
 
     else
       flash[:error] = 'Invalid username or password.'
@@ -336,7 +336,7 @@ end
 get '/user/logout' do
   session.clear
   flash[:info] = 'You are now logged out!'
-  redirect (req.params[:next] ? req.params[:next] : '/')
+  redirect(request.params[:next] ? request.params[:next] : '/')
 end
 
 get '/logout' do
@@ -364,7 +364,7 @@ post '/user/change_pw', :auth => [:logged_in] do
         @user.pw = params[:password]
         if @user.save
           flash[:success] = 'Successfully changed your password!'
-          redirect (req.params[:next] ? req.params[:next] : '/user/settings')
+          redirect(request.params[:next] ? request.params[:next] : '/user/settings')
         else
           flash[:error] = 'Error while saving the password!'
           redirect '/user/change_pw'
@@ -389,7 +389,7 @@ post '/user/delete', :auth => [:logged_in] do
     @user.destroy
     session.clear
     flash[:success] = 'Successfully deleted your user!'
-    redirect (req.params[:next] ? req.params[:next] : '/')
+    redirect(request.params[:next] ? request.params[:next] : '/')
   else
     404
   end
@@ -413,7 +413,7 @@ post '/user/:id/edit', :auth => [:edit_users] do
     @user.password = u[:password]
     if @user.save
       flash[:success] = 'Successfully edited the user!'
-      redirect (req.params[:next] ? req.params[:next] : '/user/list')
+      redirect(request.params[:next] ? request.params[:next] : '/user/list')
     else
       flash[:error] = 'Error saving the user!'
       redirect request.path_info
@@ -431,7 +431,7 @@ post '/user/:id/delete', :auth => [:edit_users] do
     logModAction(session[:username], ":edit_users/delete", params[:id])
     flash[:success] = "Successfully deleted the user #{@user.name}"
     session.clear if @user.name == session[:username]
-    redirect (req.params[:next] ? req.params[:next] : '/user/list')
+    redirect(request.params[:next] ? request.params[:next] : '/user/list')
   else
     404
   end
@@ -460,10 +460,10 @@ post '/quote/new', :auth => [:post_quotes] do
   if mdl.save
     logModAction(session[:username], ":post_quotes", mdl[:id])
     flash[:success] = 'Successfully posted the new quote!'
-    redirect (req.params[:next] ? req.params[:next] : '/quotes/')
+    redirect(request.params[:next] ? request.params[:next] : '/quotes/')
   else
     flash[:error]  = 'Error saving the new quote!'
-    redirect (req.params[:next] ? req.params[:next] : '/quotes/')
+    redirect(request.params[:next] ? request.params[:next] : '/quotes/')
   end
 end
 
