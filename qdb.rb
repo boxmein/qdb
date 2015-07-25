@@ -417,6 +417,20 @@ post '/user/:id/edit', :auth => [:edit_users] do
   end
 end
 
+post '/user/:id/delete', :auth => [:edit_users] do
+  @user = User.find(params[:id])
+  if @user
+    @user.destroy
+    logModAction(session[:username], ":edit_users/delete", params[:id])
+    flash[:success] = "Successfully deleted the user #{@user.name}"
+    session.clear if @user.name == session[:username]
+    redirect (req.params[:next] ? req.params[:next] : '/user/list')
+  else
+    404
+  end
+end
+
+
 #
 # Managing quotes
 #
