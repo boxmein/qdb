@@ -30,8 +30,53 @@ configure do
     :can_vote => 128
   }
 
+  # cookies time out after 7 days
+  set :cookie_timeout, 604800
+
   set(:auth) do |*roles|
     condition do
+
+      # secondary cookie expiration
+      unless session[:timestamp]
+        flash[:info] = 'You need to relogin to update your session!'
+        session.clear
+        unless request.xhr? 
+          redirect '/user/login'
+        else
+          status 401
+          body(JSON.fast_generate({success: false, err: 'ADD_TIMESTAMP'}))
+        end
+        break
+      else
+        begin
+          ctime = Time.at session[:timestamp]
+          ntime = Time.now
+
+          if (ntime - ctime) > settings.cookie_timeout
+            flash[:info] = 'Session expired. Please relogin'
+            session.clear
+            unless request.xhr?
+              redirect '/user/login?' + Rack::Utils.build_query({ :next => request.path }) unless request.xhr?
+            else
+              status 401
+              body(JSON.fast_generate({success: false, err: 'SESSION_EXPIRED'})) 
+            end
+            break
+          end
+        rescue TypeError
+          flash[:error] = 'Invalid timestamp - please relogin!'
+          session.clear
+          unless request.xhr?
+            redirect '/user/login?' + Rack::Utils.build_query({ :next => request.path }) unless request.xhr?
+          else
+            status 401 
+            body(JSON.fast_generate({success: false, err: 'INVALID_TIMESTAMP'})) 
+          end
+          break
+        end
+      end
+
+
       # new pseudo-role: logged_in
       if roles.include? :logged_in
         unless session[:username]
