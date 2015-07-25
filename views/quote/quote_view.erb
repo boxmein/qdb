@@ -2,7 +2,7 @@
   <div class="actual-quote"> <%= @quote.quote %> </div>
 
   <div class="metadata-bar">
-    <div class="upvotes">&and; 0</div> /
+    <div class="upvotes <%= @userFlags.include?(:can_vote) ? 'can_vote' : '' %>">&and; 0</div> /
     <div class="id"><a href="/quote/<%=@quote.id%>">#<%= @quote.id %></a></div>
     <% if @loggedIn %>
     <%    if @userFlags.include?(:edit_quotes) %>
