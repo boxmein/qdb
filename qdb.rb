@@ -259,6 +259,7 @@ post '/user/login' do
       session[:username] = user[:name]
       session[:flags] = user[:flags]
       session[:user_id] = user[:id]
+      session[:timestamp] = Time.now.to_i
 
       flash[:success] = 'Successfully logged in!'
       redirect (req.params[:next] ? req.params[:next] : '/')
