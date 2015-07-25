@@ -8,6 +8,7 @@ require 'bcrypt'
 require 'rack-flash'
 require 'json'
 require 'encrypted_cookie'
+require 'rack/csrf'
 
 # wow models
 require './models/Quote'
@@ -18,7 +19,7 @@ abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
 use Rack::Session::EncryptedCookie, :expire_after => 604800,
                                     :secret => ENV['COOKIE_SECRET'],
                                     :http_only => true
-use Rack::Csrf
+use Rack::Csrf, :alert => true, :skip => ['POST:/upvote/\\d+']
 use Rack::Flash, :accessorize => [:info, :success, :error]
 
 configure do
