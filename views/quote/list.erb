@@ -1,8 +1,12 @@
 <h2>Quotes</h2>
 <div class="quotes">
   <% @quotes.each do |q|
-       @quote = q
-       @voted = @votedQuotes.include? q.id
+      @quote = q
+      if @loggedIn
+        @voted = @votedQuotes.include? q.id
+      else 
+        @voted = false
+      end
   %><%= erb :'quote/quote_view' %>
   <% end %>
   <% will_paginate @quotes unless @quotes.empty? %>
