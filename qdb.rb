@@ -193,6 +193,7 @@ end
 # Get which quote?
 get '/quote/:id' do
   pass if params[:id] == 'new'
+  redirect '/quotes' if params[:id] == 'list'
   @quote = Quote.where(:id => params[:id].to_i).first
   
   user = User.where(name: session[:username]).first
@@ -208,20 +209,17 @@ get '/quote/:id' do
   end
 end
 
-# Get a list of quotes with a sort-by action
-get '/quotes/:sortby' do
-  # pass unless params[:sortby]
-  pass
-end
-
-# Get a list of ~10 quotes
+# Get a list of ~40 quotes
 get '/quotes/' do
   page = params[:page] == 0 ? 1 : params[:page]
-  @quotes = Quote.where(:approved => true).page(params[:page])
+  @quotes = Quote.where(:approved => true).order(:id).page(params[:page])
+
   user = User.where(name: session[:username]).first
   @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
+
   puts "quotes the user has voted on"
   p @votedQuotes
+
   erb :'quote/list'
 end
 
