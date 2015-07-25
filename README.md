@@ -137,10 +137,12 @@ Send a pull request, yo
 - Fancy user management
 - Moderation logs
 - Pagination
+- Voting on quotes
+- Web App Security (TM)
 - TODO: Make everything configurable
 - TODO: Different types of quote sorting
 - TODO: Public moderation logs
-- TODO: Voting on quotes
+
 
 
 
