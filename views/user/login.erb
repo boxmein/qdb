@@ -1,5 +1,6 @@
 <h2>Login</h2>
 <form method="POST" action="/user/login" class="form-horizontal">
+  <%= Rack::Csrf.tag env %>
   <% if @loggedIn %>
   <div class="alert alert-info">
     You should note that you <em>are</em> actually logged in already. Log out if
