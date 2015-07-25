@@ -604,22 +604,41 @@ post '/upvote/:id', :auth => [:can_vote] do
   quote = Quote.find(params[:id])
   user = User.find(session[:user_id])
 
-  puts "Upvoting a quote"
-  p quote
-  p user
-
   if quote
+
+    # TODO: check vote for uniqueness before generating new one
+
+    existing_vote = Vote.where(:quote => quote, :user => user)
+
+    unless existing_vote.nil?
+      status 401
+      if request.xhr?
+        body(JSON.fast_generate({success: false, votes_now: quote.upvotes, quote_id: quote.id, err: "VOTED_ALREADY"}))
+      else
+        flash[:error] = 'You have voted already on this quote!'
+        redirect(request.params[:next] ? request.params[:next] : '/quotes/')
+      end
+      break
+    end
+
     v = Vote.new
-    v[:quote_id] = quote[:id]
-    v[:user_id] = user[:id]
+    v.quote = quote
+    v.user = user
+
     if v.save
-      quote[:upvotes] = quote.voters.length
+      
+      quote.upvotes = quote.voters.size
+
       status 200
-      body quote[:upvotes]
+      if request.xhr?
+        body(JSON.fast_generate({success: true, votes_now: quote.upvotes, quote_id: quote.id}))
+      else
+        redirect '/quotes/'
+      end
     else
       if request.xhr?
         status 500
-        body "Save failed!"
+        body(JSON.fast_generate({success: false, err: 'GENERAL_FAIL', votes_now: quote.upvotes, quote_id: quote.id}))
       else
         flash[:error] = "Saving the vote failed :("
         redirect "/quote/#{params[:id]}"
@@ -631,7 +650,36 @@ post '/upvote/:id', :auth => [:can_vote] do
       body "No such quote!"
     else
       flash[:error] = 'No such quote!'
-      redirect '/quotes/'
+      redirect(request.params[:next] ? request.params[:next] : '/quotes/')
+    end
+  end
+end
+
+post '/unvote/:id', :auth => [:can_vote] do
+  quote = Quote.find(params[:id])
+  user = User.find(session[:user_id])
+
+  v = Vote.where :quote_id => quote.id, :user_id => user.id
+
+  if v
+    v.destroy
+    quote.upvotes = quote.voters.size
+
+    if request.xhr?
+      status 200
+      body(JSON.fast_generate({success: true}))
+    else
+      flash[:success] = 'Unvoted successfully!'
+      redirect(request.params[:next] ? request.params[:next] : '/quotes/')
+    end
+
+  else
+    if request.xhr?
+      status 404
+      body(JSON.fast_generate({success: false, err: "NOT_VOTED"}))
+    else
+      flash[:error] = 'You haven\'t voted on this!'
+      redirect(request.params[:next] ? request.params[:next] : '/quotes/')
     end
   end
 end
