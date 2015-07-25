@@ -28,6 +28,8 @@ GEM
       rack
     rack-protection (1.5.3)
       rack
+    rack_csrf (2.5.0)
+      rack (>= 1.1.0)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -51,6 +53,7 @@ DEPENDENCIES
   jpoz-sinatra-recaptcha
   pg
   rack-flash3
+  rack_csrf
   sinatra
   sinatra-activerecord
   will_paginate (~> 3.0.6)

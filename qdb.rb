@@ -18,7 +18,7 @@ abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
 use Rack::Session::EncryptedCookie, :expire_after => 604800,
                                     :secret => ENV['COOKIE_SECRET'],
                                     :http_only => true
-
+use Rack::Csrf
 use Rack::Flash, :accessorize => [:info, :success, :error]
 
 configure do
@@ -158,6 +158,9 @@ before do
       end
     end
   end
+
+  response.headers['Content-Security-Policy'] = "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; font-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com"
+  response.headers['X-Frame-Options'] = 'deny'
 end
 
 helpers do
