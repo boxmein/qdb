@@ -6,6 +6,7 @@ require './config/env'
 require 'sinatra/recaptcha'
 require 'bcrypt'
 require 'rack-flash'
+require 'json'
 
 # wow models
 require './models/Quote'
@@ -81,14 +82,24 @@ configure do
       if roles.include? :logged_in
         unless session[:username]
           flash[:error] = 'You need to be logged in to go here.'
-          redirect '/user/login'
+          unless request.xhr?
+            redirect '/user/login?' + Rack::Utils.build_query({ :next => request.path })
+          else
+            status 401
+            body(JSON.fast_generate({success: false, err: 'NOT_LOGGED_IN'}))
+          end
         end
         break
       end
 
       unless session[:username]
         flash[:error] = 'You need to be logged in to go here.'
-        redirect '/user/login'
+        unless request.xhr?
+          redirect '/user/login?' + Rack::Utils.build_query({ :next => request.path })
+        else
+          status 401
+          body(JSON.fast_generate({success: false, err: 'NOT_LOGGED_IN'})
+        end
         break
       end
 
@@ -103,10 +114,11 @@ configure do
         flag_exists = (curr_flags & auth_flags[role]) != 0
         allowed = allowed && flag_exists
       end
+
       unless allowed
         if request.xhr?
           status 401
-          body 'You are not allowed to do this. :('
+          body(JSON.fast_generate({success: false, err: 'UNAUTHORIZED'}))
         else
           flash[:error] = 'You aren\'t allowed to go here! :('
           redirect '/'
@@ -224,7 +236,7 @@ post '/user/login' do
 
   if session[:username] and session[:user_id] and session[:flags]
     flash[:info] = 'You\'re already logged in!'
-    redirect '/'
+    redirect (req.params[:next] ? req.params[:next] : '/')
   end
 
   unless params[:name] and params[:password]
@@ -317,7 +329,7 @@ end
 get '/user/logout' do
   session.clear
   flash[:info] = 'You are now logged out!'
-  redirect '/'
+  redirect (req.params[:next] ? req.params[:next] : '/')
 end
 
 get '/logout' do
@@ -345,7 +357,7 @@ post '/user/change_pw', :auth => [:logged_in] do
         @user.pw = params[:password]
         if @user.save
           flash[:success] = 'Successfully changed your password!'
-          redirect '/user/settings'
+          redirect (req.params[:next] ? req.params[:next] : '/user/settings')
         else
           flash[:error] = 'Error while saving the password!'
           redirect '/user/change_pw'
@@ -370,7 +382,7 @@ post '/user/delete', :auth => [:logged_in] do
     @user.destroy
     session.clear
     flash[:success] = 'Successfully deleted your user!'
-    redirect '/'
+    redirect (req.params[:next] ? req.params[:next] : '/')
   else
     404
   end
@@ -394,7 +406,7 @@ post '/user/:id/edit', :auth => [:edit_users] do
     @user.password = u[:password]
     if @user.save
       flash[:success] = 'Successfully edited the user!'
-      redirect '/user/list'
+      redirect (req.params[:next] ? req.params[:next] : '/user/list')
     else
       flash[:error] = 'Error saving the user!'
       redirect request.path_info
@@ -427,10 +439,10 @@ post '/quote/new', :auth => [:post_quotes] do
   if mdl.save
     logModAction(session[:username], ":post_quotes", mdl[:id])
     flash[:success] = 'Successfully posted the new quote!'
-    redirect '/quotes/'
+    redirect (req.params[:next] ? req.params[:next] : '/quotes/')
   else
     flash[:error]  = 'Error saving the new quote!'
-    redirect '/quotes/'
+    redirect (req.params[:next] ? req.params[:next] : '/quotes/')
   end
 end
 
