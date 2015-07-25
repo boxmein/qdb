@@ -294,6 +294,12 @@ post '/user/register' do
 
   raise InvalidRequest unless params[:user] and params[:user][:name] and params[:user][:password]
 
+  unless params[:user] != '' and params[:user].length > 4 and params[:user].length < 16
+    flash[:error] = 'Try an username longer than 4 characters :)'
+    redirect '/user/register'
+    break
+  end
+
   unless recaptcha_correct?
     flash[:error] = 'You failed the recaptcha!'
     redirect '/user/register'
