@@ -160,7 +160,7 @@ before do
     end
   end
 
-  response.headers['Content-Security-Policy'] = "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; font-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com"
+  response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; style-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; font-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com"
   response.headers['X-Frame-Options'] = 'deny'
 end
 
@@ -599,7 +599,7 @@ end
 # Voting
 #
 
-post '/upvote/:id', :auth => :can_vote do
+post '/upvote/:id', :auth => [:can_vote] do
   quote = Quote.find(params[:id])
   user = User.find(session[:user_id])
 
