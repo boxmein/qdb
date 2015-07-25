@@ -2,6 +2,7 @@
 <div class="quotes">
   <% @quotes.each do |q|
        @quote = q
+       @voted = @votedQuotes.include? q.id
   %><%= erb :'quote/quote_view' %>
   <% end %>
   <% will_paginate @quotes unless @quotes.empty? %>
