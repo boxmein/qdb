@@ -8,6 +8,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css">
   <link rel="stylesheet" href="/css/index.css">
+  <!-- yay web application security -->
+  <style id="antiClickjack">body{display:none !important;}</style>
+  <script>
+  if (self === top) {
+       var antiClickjack = document.getElementById("antiClickjack");
+       antiClickjack.parentNode.removeChild(antiClickjack);
+  } else {
+       top.location = self.location;
+  }
+  </script>
 </head>
 <body>
   <a href="#main" class="sr-only">Skip to content</a>
