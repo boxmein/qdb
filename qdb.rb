@@ -7,6 +7,7 @@ require 'sinatra/recaptcha'
 require 'bcrypt'
 require 'rack-flash'
 require 'json'
+require 'encrypted_cookie'
 
 # wow models
 require './models/Quote'
@@ -14,8 +15,9 @@ require './models/User'
 require './models/Vote'
 
 abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
-use Rack::Session::Cookie, :expire_after => 604800,
-                           :secret => ENV['COOKIE_SECRET']
+use Rack::Session::EncryptedCookie, :expire_after => 604800,
+                                    :secret => ENV['COOKIE_SECRET'],
+                                    :http_only => true
 
 use Rack::Flash, :accessorize => [:info, :success, :error]
 
