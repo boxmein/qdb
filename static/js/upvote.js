@@ -17,8 +17,15 @@ window.addEventListener('load', function() {
     })
     .error(console.error.bind(console))
     .done(function(data) {
-      $that.html('&and; ' + data);
-      $that.addClass('voted');
+      try { 
+        var obj = JSON.parse(data); 
+        $that.html('&and; ' + obj.votes_now);
+        $that.addClass('voted');
+      } catch (err) {
+        console.error(err);
+        $that.html('&and; err');
+        $that.addClass('error');
+      }
     });
   });
 });
