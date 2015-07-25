@@ -196,7 +196,8 @@ get '/quote/:id' do
   @quote = Quote.where(:id => params[:id].to_i).first
   
   user = User.where(name: session[:username]).first
-  @voted = Vote.where(quote: @quote, user: user).first.size != 0
+  @voted = Vote.where(quote: @quote, user: user).first != nil
+  @voted &&= @voted.size > 0
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
