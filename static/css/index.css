@@ -17,14 +17,14 @@ textarea.actual-quote {
   display: inline-block;
   padding: 2px; }
 .metadata-bar .upvotes {
-  color: #17BD51;
+  color: #17bd51;
   cursor: pointer; }
 .metadata-bar .upvotes:hover {
   border-radius: 2px;
   color: #23e466;
   text-decoration: underline; }
 .metadata-bar .downvotes {
-  color: #E31B1B;
+  color: #e31b1b;
   cursor: pointer; }
 .metadata-bar .downvotes:hover {
   border-radius: 2px;
@@ -56,12 +56,10 @@ textarea.actual-quote {
   max-width: 600px; }
 
 .actual-quote {
-  white-space: pre-line;
+  white-space: pre-wrap;
   overflow: auto;
   font-family: "Bitstream Vera Sans Mono", monospace;
   font-size: 12px; }
 
 .navbar .navbar-text a {
   color: white; }
-
-/*# sourceMappingURL=index.css.map */
