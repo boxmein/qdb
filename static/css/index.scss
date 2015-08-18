@@ -80,7 +80,7 @@ textarea.actual-quote {
 }
 
 .actual-quote {
-  white-space: pre-line;
+  white-space: pre-wrap;
   overflow: auto;
   font-family: $quoteFont;
   font-size: 12px;
