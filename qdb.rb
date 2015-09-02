@@ -292,19 +292,19 @@ post '/user/register' do
 
   raise InvalidRequest unless params[:user] and params[:user][:name] and params[:user][:password]
 
+  params[:user][:name].strip!
   unless params[:user][:name] != '' and params[:user][:name].length > 4 and params[:user][:name].length < 16
-    flash[:error] = 'Try an username longer than 4 characters :)'
+    flash[:error] = 'The username has to stay between 4 and 16 characters. Some letters may count as more than one character!'
     redirect '/user/register'
     break
   end
 
   unless recaptcha_correct?
-    flash[:error] = 'You failed the recaptcha!'
+    flash[:error] = 'You failed the recaptcha! Ahem, sorry, 011000010111001001100101001000000111100101101111011101010010000001100001001000000111001001101111011000100110111101110100'
     redirect '/user/register'
     break
   end
 
-  params[:user][:name].strip!
   params[:user][:flags] = 0
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
