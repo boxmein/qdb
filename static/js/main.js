@@ -4,16 +4,11 @@ window.addEventListener('load', function() {
   $('.upvotes').click(function(evt) {
     var $that = $(evt.target);
 
-    if ($that.hasClass('.voted')) {
-      console.log('already voted!');
-      return;
-    }
-
     var id = $that.parents('.quote').data('id');
-    console.log('upvoting id', id);
+    console.log('upvoting id, voted?', id, $that.hasClass('voted'));
 
     $.ajax({
-      url: '/upvote/' + id,
+      url: ($that.hasClass('voted') ? '/unvote/' : '/upvote/') + id,
       method: 'POST'
     })
     .error(console.error.bind(console))
@@ -21,7 +16,7 @@ window.addEventListener('load', function() {
       try { 
         var obj = JSON.parse(data); 
         $that.html('&and; ' + obj.votes_now);
-        $that.addClass('voted');
+        $that.toggleClass('voted');
       } catch (err) {
         console.error(err);
         $that.html('&and; err');
