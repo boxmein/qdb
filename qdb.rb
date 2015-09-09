@@ -37,6 +37,12 @@ configure do
   # cookies time out after 7 days
   set :cookie_timeout, 604800
 
+  # if DATABASE_URL is set, set a freaking adapter lest heroku freaks out
+  # over not updating the database.yml as per standard
+  if ENV['DATABASE_URL']
+    set :database, {:adapter => 'postgresql'}
+  end
+
   set(:auth) do |*roles|
     condition do
 
