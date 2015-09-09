@@ -1,6 +1,6 @@
 require 'sinatra'
-require './config/env'
 require 'sinatra/activerecord'
+require './config/env'
 require 'will_paginate'
 require 'will_paginate/active_record'
 require 'sinatra/recaptcha'
