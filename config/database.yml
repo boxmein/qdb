@@ -4,3 +4,6 @@ development:
   username: postgres
   password: grespost
   host: localhost
+
+production:
+  adapter: postgresql
