@@ -1,8 +1,8 @@
+require './config/env'
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'will_paginate'
 require 'will_paginate/active_record'
-require './config/env'
 require 'sinatra/recaptcha'
 require 'bcrypt'
 require 'rack-flash'
@@ -15,6 +15,9 @@ require './models/Quote'
 require './models/User'
 require './models/Vote'
 
+puts "qdb -- starting on #{Time.now}"
+
+puts "setting up Rack modules"
 abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
 use Rack::Session::EncryptedCookie, :expire_after => 604800,
                                     :secret => ENV['COOKIE_SECRET'],
@@ -22,6 +25,7 @@ use Rack::Session::EncryptedCookie, :expire_after => 604800,
 use Rack::Csrf, :alert => true, :skip => ['POST:/upvote/\\d+']
 use Rack::Flash, :accessorize => [:info, :success, :error]
 
+puts "configuring everything else..."
 configure do
   set :auth_flags, {
     :post_quotes => 1,
@@ -40,7 +44,8 @@ configure do
   # if DATABASE_URL is set, set a freaking adapter lest heroku freaks out
   # over not updating the database.yml as per standard
   if ENV['DATABASE_URL']
-    set :database, {:adapter => 'postgresql'}
+    puts "forcing $DATABASE_URL for connection:"
+    ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'] || 'postgres://localhost/qdb')
   end
 
   set(:auth) do |*roles|
