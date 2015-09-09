@@ -1,5 +1,5 @@
-require './config/env'
 require 'sinatra'
+require './config/env'
 require 'sinatra/activerecord'
 require 'will_paginate'
 require 'will_paginate/active_record'
@@ -40,13 +40,6 @@ configure do
 
   # cookies time out after 7 days
   set :cookie_timeout, 604800
-
-  # if DATABASE_URL is set, set a freaking adapter lest heroku freaks out
-  # over not updating the database.yml as per standard
-  if ENV['DATABASE_URL']
-    puts "forcing $DATABASE_URL for connection:"
-    ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'] || 'postgres://localhost/qdb')
-  end
 
   set(:auth) do |*roles|
     condition do
