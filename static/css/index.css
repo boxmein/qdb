@@ -17,14 +17,14 @@ textarea.actual-quote {
   display: inline-block;
   padding: 2px; }
 .metadata-bar .upvotes {
-  color: #17bd51;
+  color: #17BD51;
   cursor: pointer; }
 .metadata-bar .upvotes:hover {
   border-radius: 2px;
   color: #23e466;
   text-decoration: underline; }
 .metadata-bar .downvotes {
-  color: #e31b1b;
+  color: #E31B1B;
   cursor: pointer; }
 .metadata-bar .downvotes:hover {
   border-radius: 2px;
@@ -63,3 +63,9 @@ textarea.actual-quote {
 
 .navbar .navbar-text a {
   color: white; }
+
+.pagination .current {
+  font-style: normal;
+  font-weight: bold; }
+
+/*# sourceMappingURL=index.css.map */
