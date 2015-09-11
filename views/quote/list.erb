@@ -9,5 +9,5 @@
       end
   %><%= erb :'quote/quote_view' %>
   <% end %>
-  <% will_paginate @quotes unless @quotes.empty? %>
+  <%= will_paginate @quotes unless @quotes.empty? %>
 </div>
