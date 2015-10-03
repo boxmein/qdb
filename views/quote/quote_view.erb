@@ -1,5 +1,5 @@
 <div class="quote well" data-id="<%=@quote.id%>">
-  <div class="actual-quote"> <%= @quote.quote %> </div>
+  <div class="actual-quote"><%= @quote.quote %></div>
 
   <div class="metadata-bar">
     <div title="Upvotes" class="upvotes <%= (@loggedIn && @voted) ? 'voted' : '' %> <%= (@loggedIn && @userFlags.include?(:can_vote)) ? 'can_vote' : '' %>">&and; <%= @quote.upvotes || 0 %></div> /
