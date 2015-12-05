@@ -476,7 +476,7 @@ post '/quote/new', :auth => [:post_quotes] do
 
   if mdl.save
     logModAction(session[:username], ":post_quotes", mdl[:id])
-    flash[:success] = 'Successfully posted the new quote!'
+    flash[:success] = 'Successfully submitted and waiting to be approved!'
     redirect(request.params[:next] ? request.params[:next] : '/quotes/')
   else
     flash[:error]  = 'Error saving the new quote!'
