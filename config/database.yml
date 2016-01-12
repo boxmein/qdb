@@ -1,8 +1,8 @@
 development:
   adapter: postgresql
-  database: development
-  username: postgres
-  password: grespost
+  database: qdb
+  username: qdb
+  password: "ayy-lmao-qdb"
   host: localhost
 
 production:
