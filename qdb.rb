@@ -182,14 +182,17 @@ helpers do
 end
 
 error do
+  @pageTitle = "error doing some stuff"
   erb :error, locals: {message: env['sinatra.error'].message}
 end
 
 error 403 do
+  @pageTitle = "you don't seem to be authorized"
   erb :'responses/403'
 end
 
 not_found do
+  @pageTitle = "sick surfing, dude! you're way off course though..."
   erb :'responses/404'
 end
 
@@ -198,6 +201,7 @@ end
 #
 
 get '/' do
+  @pageTitle = "splash page"
   erb :index
 end
 
@@ -221,6 +225,7 @@ get '/quote/:id' do
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
+    @pageTitle = "quote ##{@quote.id} by #{@quote.author}"
     erb :'quote/quote_view'
   else
     flash[:error] = 'There is no quote with this ID!'
@@ -253,7 +258,7 @@ get '/quotes/:sort_by' do
 
   user = User.where(name: session[:username]).first
   @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
-
+  @pageTitle = "quotes - page #{params[:page]}"
   erb :'quote/list'
 end
 
@@ -275,6 +280,7 @@ end
 
 
 get '/user/login' do
+  @pageTitle = "login"
   erb :'user/login'
 end
 
@@ -325,6 +331,7 @@ end
 
 get '/user/register' do
   response.headers['Content-Security-Policy'] = ''
+  @pageTitle = "register"
   erb :'user/register'
 end
 
@@ -362,6 +369,7 @@ post '/user/register' do
     end
   else
     @errors = user.errors.messages
+    @pageTitle = "error registering - try again!"
     erb :'user/register'
   end
 end
@@ -377,7 +385,7 @@ end
 # Users can only view their own settings
 get '/user/settings', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
-
+  @pageTitle = "your settings"
   if @user
     erb :'user/settings'
   else
@@ -397,6 +405,7 @@ end
 
 get '/user/change_pw', :auth => [:logged_in] do
   @user = User.find(session[:user_id])
+  @pageTitle = "change your password"
   if @user
     erb :'user/change_pw'
   else
@@ -432,6 +441,7 @@ post '/user/change_pw', :auth => [:logged_in] do
 end
 
 get '/user/delete', :auth => [:logged_in] do
+  @pageTitle = "delete your account from this site"
   erb :'user/delete'
 end
 
@@ -450,6 +460,7 @@ end
 get '/user/:id/edit', :auth => [:edit_users] do
   @user = User.find(params[:id])
   if @user
+    @pageTitle = "editing user #{@user.name}"
     erb :'user/edit'
   else
     404
@@ -503,6 +514,7 @@ end
 #
 
 get '/quote/new', :auth => [:post_quotes] do
+  @pageTitle = "add new quote"
   erb :'quote/add'
 end
 
@@ -537,6 +549,7 @@ get '/quote/:id/edit', :auth => [:edit_quotes] do
   @quote = Quote.find(params[:id].to_i)
 
   if @quote
+    @pageTitle = "edit quote"
     erb :'quote/edit'
   else
     flash[:error] = 'No such quote!'
@@ -572,6 +585,7 @@ get '/quote/:id/delete', :auth => [:delete_quotes] do
   @quote = Quote.find(params[:id].to_i)
 
   if @quote
+    @pageTitle = "delete quote #{params[:id]}"
     erb :'quote/delete'
   else
     flash[:error] = 'No such quote!'
@@ -619,6 +633,7 @@ end
 get '/user/list', :auth => [:list_users] do
   page = params[:page] == 0 ? 1 : params[:page]
   @users = User.all.order(:id).page(page)
+  @pageTitle = "list of users"
   erb :'user/list'
 end
 
@@ -627,6 +642,7 @@ get '/user/:id/set_flags', :auth => [:set_flags] do
   user = User.find(params[:id])
   @username = user.name
   @userflags = user.flags
+  @pageTitle = "set the user flags for user #{@username}"
   erb :'user/set_flags'
 end
 
@@ -654,6 +670,7 @@ end
 # Moderation queue
 get '/moderate/queue', :auth => [:approve_quotes] do
   @quotes = Quote.where(:approved => false).order(:id).page(params[:page])
+  @pageTitle = "moderator approval queue"
   erb :'mod/approve_queue'
 end
 
