@@ -1,5 +1,6 @@
 <h2>Quotes</h2>
 <div class="quotes">
+  <%= will_paginate @quotes unless @quotes.empty? %>
   <% @quotes.each do |q|
       @quote = q
       if @loggedIn
