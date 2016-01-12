@@ -2,13 +2,26 @@
 
 Quote Database Engine in Ruby / Sinatra.
 
+## Features
 
-
+- User accounts with complex permissions
+- Fancy Material layout (it even has ripples!)
+- Fancy quote management
+- Fancy user management
+- Moderation logs
+- Pagination
+- Voting on quotes
+- Web App Security (TM)
+- TODO: Dynamic reloading and stuff
+- TODO: decent stylesheets and class tags for configurable themes
+- TODO: Make everything configurable
+- TODO: Different types of quote sorting
+- TODO: Public moderation logs
 
 ## Running locally
 
-**You need to have:** Postgres, Ruby ~1.9.1, `ruby-dev` (for a few modules) and
-Bundler for the rubygem dependencies.
+**You need to have:** a PostgreSQL server, Ruby ~1.9.1, `ruby-dev` (to be able to install a few modules) and
+Bundler for the rubygem dependencies.1
 
 **TL;DR*** with Heroku Toolbelt:
 
@@ -39,21 +52,37 @@ The environment variables are:
 **RECAPTCHA_CLIENTKEY**: [Google Recaptcha client/site key][gr]  
 **DATABASE_URL**: Set this for Foreman/local running. This is the full database
 URL that the app will use to connect to Postgres. Usually in the form of 
-`postgres://[user]:[password]@localhost:[port]/`. Heroku will write the URL 
+`postgres://[user]:[password]@localhost:[port]/[database]`. Heroku will write the URL 
 itself.
 
 [gr]: https://www.google.com/recaptcha/admin
 
 ### Setting up the tables
 
+Before you can run Rake, you have to tell PostgreSQL about the database account
+and database you'll be using.
+
+Log into psql, create a user, set its password (usually via psql), and then give
+it a new database. Then, make sure your `config/database.yml` matches your 
+PostgreSQL config, that the URL in `.env` / `environment_variables` / `env.sh` 
+matches the postgresql config, and then you're done. 
+
+
 Once you've got everything else setup, let Rake take care of creating the tables 
 and setting up the indices for the app. 
 
     $ rake db:schema:load
 
-It should run perfectly fine. If, on the other hand, you get some unpredictable error
-about existing tables, then run the following command to drop the database containing
-qdb tables:
+It should now run fine.
+
+If you get an error with there not being a `development` config, but there is an
+option for `default_env`, then run rake again with `RACK_ENV=default_env`.
+
+If you get authentication errors, make sure your PSQL usernames and passwords are 
+correct everywhere and that the authentication method you set up is correct.
+
+If the tables it needs to generate exist already, then run the following command
+to drop the database containing qdb tables:
 
     $ rake db:reset
 
@@ -125,25 +154,6 @@ VM with the required packages, tools as well as the Heroku Toolbelt installed.
 ## Contributing
 
 Send a pull request, yo
-
-
-
-
-## Features
-
-- User accounts with complex permissions
-- Fancy Material layout (it even has ripples!)
-- Fancy quote management
-- Fancy user management
-- Moderation logs
-- Pagination
-- Voting on quotes
-- Web App Security (TM)
-- TODO: Make everything configurable
-- TODO: Different types of quote sorting
-- TODO: Public moderation logs
-
-
 
 
 
