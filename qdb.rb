@@ -15,18 +15,28 @@ require './models/Quote'
 require './models/User'
 require './models/Vote'
 
-puts "qdb -- starting on #{Time.now}"
+$DEBUG = !!ENV['DEBUG']
 
-puts "setting up Rack modules"
+puts "-- qdb -- starting on #{Time.now}"
+puts "setting up Rack modules" if $DEBUG
 abort "Set $COOKIE_SECRET to a cookie secret!" unless ENV['COOKIE_SECRET']
+
 use Rack::Session::EncryptedCookie, :expire_after => 604800,
                                     :secret => ENV['COOKIE_SECRET'],
                                     :http_only => true
 use Rack::Csrf, :alert => true, :skip => ['POST:/upvote/\\d+']
 use Rack::Flash, :accessorize => [:info, :success, :error]
 
-puts "configuring everything else..."
+abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
+abort "Set $RECAPTCHA_SECRET to your recaptcha secret!" unless ENV['RECAPTCHA_SECRET']
+Sinatra::ReCaptcha.public_key = ENV['RECAPTCHA_CLIENTKEY']
+Sinatra::ReCaptcha.private_key = ENV['RECAPTCHA_SECRET']
+
+puts "Recaptcha initialized with public key #{ENV['RECAPTCHA_CLIENTKEY']} and private key #{ENV['RECAPTCHA_SECRET']}." if $DEBUG
+
+puts "configuring everything else..." if $DEBUG
 configure do
+  set :port, ENV['PORT'] || 5000
   set :auth_flags, {
     :post_quotes => 1,
     :edit_quotes => 2,
@@ -43,7 +53,7 @@ configure do
 
   set(:auth) do |*roles|
     condition do
-
+      # puts "authenticating for #{session[:username]}" if $DEBUG
       # secondary cookie expiration
       unless session[:timestamp]
         flash[:info] = 'You need to relogin to update your session!'
@@ -84,7 +94,6 @@ configure do
         end
       end
 
-
       # new pseudo-role: logged_in
       if roles.include? :logged_in
         unless session[:username]
@@ -114,15 +123,18 @@ configure do
       auth_flags = settings.auth_flags
 
       allowed = roles.length > 0
-
+      # print "user #{session[:username]} flags #{session[:flags]} has required role: " if $DEBUG
       roles.each do |role|
         # skip the :logged_in role
         next if role == :logged_in
         flag_exists = (curr_flags & auth_flags[role]) != 0
+        # print "#{role} " if flag_exists && $DEBUG
         allowed = allowed && flag_exists
       end
+      # puts "" if $DEBUG
 
       unless allowed
+        # puts "User #{session[:username]} flags #{session[:flags]} denied access to #{request.request_method} #{request.path_info}" if $DEBUG
         if request.xhr?
           status 401
           body(JSON.fast_generate({success: false, err: 'UNAUTHORIZED'}))
@@ -131,18 +143,14 @@ configure do
           redirect '/'
         end
       end
+      # puts "User #{session[:username]} flags #{session[:flags]} was allowed access to #{request.request_method} #{request.path_info}" if $DEBUG
+      p request
     end
-
-    abort "Set $RECAPTCHA_CLIENTKEY to your recaptcha public/client key!" unless ENV['RECAPTCHA_CLIENTKEY']
-    Sinatra::ReCaptcha.public_key = ENV['RECAPTCHA_CLIENTKEY']
-
-    abort "Set $RECAPTCHA_SECRET to your recaptcha secret!" unless ENV['RECAPTCHA_SECRET']
-    Sinatra::ReCaptcha.private_key = ENV['RECAPTCHA_SECRET']
   end
 
   # Mod logs are now also stdout
   def logModAction(name, action, on)
-    puts "modaction name=#{name} action=#{action} on=#{on}"
+    puts "modaction! name=#{name} action=#{action} on=#{on}"
   end
 
   set :logModAction, lambda { |name, act, on| logModAction(name, act, on) }
@@ -151,17 +159,17 @@ configure do
 end
 
 before do
-  @username = session[:username] or nil
-  @loggedIn = @username != nil
-  @flags    = session[:flags]
-
-  if @loggedIn
+  if session[:username] != nil
+    @loggedIn = true
+    @username = session[:username]
+    @flags    = session[:flags]
     @userFlags = []
     settings.auth_flags.each do |flag, bitmask|
       if (session[:flags] & bitmask) != 0
         @userFlags << flag
       end
     end
+    
   end
 
   response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; style-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; font-src 'self' https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com"
@@ -198,10 +206,18 @@ end
 get '/quote/:id' do
   pass if params[:id] == 'new'
   redirect '/quotes' if params[:id] == 'list'
+
+  puts "Looking for quote #{:id}..."
   @quote = Quote.where(:id => params[:id].to_i).first
-  
-  user = User.where(name: session[:username]).first
-  @voted = Vote.where(quote: @quote, user: user).first != nil
+
+  if @loggedIn
+    user = User.where(name: session[:username]).first
+    @voted = Vote.where(quote: @quote, user: user).first != nil
+  else
+    @voted = false
+  end
+
+  @isQuotePage = true
 
   if (@quote && @quote.approved) or
      (@quote && @loggedIn && @userFlags.include?(:approve_quotes))
@@ -210,28 +226,47 @@ get '/quote/:id' do
     flash[:error] = 'There is no quote with this ID!'
     redirect '/quotes/'
   end
+
 end
 
 # Get a list of ~40 quotes
-get '/quotes/' do
+get '/quotes/:sort_by' do
+  possible_orders = {
+    :voted => 'upvotes DESC',
+    :new => 'id DESC',
+    :old => 'id ASC'
+  }
+
   page = params[:page] == 0 ? 1 : params[:page]
-  @quotes = Quote.where(:approved => true).order(:id).page(params[:page])
+  
+  sort_by = params[:sort_by].to_sym
+
+  if possible_orders.include? sort_by
+    sort_by = possible_orders[sort_by]
+  else
+    sort_by = possible_orders[:old]
+  end
+
+  puts "Received #{params[:sort_by].inspect}, sorting by #{sort_by.inspect}!" if $DEBUG
+
+  @quotes = Quote.where(:approved => true).order(sort_by).page(params[:page])
 
   user = User.where(name: session[:username]).first
   @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
-
-  puts "quotes the user has voted on"
-  p @votedQuotes
 
   erb :'quote/list'
 end
 
 get '/quote' do
-  redirect '/quotes/'
+  redirect '/quotes/old'
 end
 
 get '/quotes' do
-  redirect '/quotes/'
+  redirect '/quotes/old'
+end
+
+get '/quotes/' do 
+  redirect '/quotes/old'
 end
 
 #
@@ -255,6 +290,7 @@ post '/user/login' do
   end
 
   unless params[:name] and params[:password]
+    puts "didn't receive entire font! login failed for username #{params[:name]}" if $DEBUG
     raise InvalidRequest, 'Missing parameters when trying to log in.'
   end
 
@@ -421,23 +457,31 @@ get '/user/:id/edit', :auth => [:edit_users] do
 end
 
 post '/user/:id/edit', :auth => [:edit_users] do
+  #puts "am now in user/edit" if $DEBUG
   @user = User.find(params[:id])
   if @user
+    #puts "found a user" if $DEBUG
     u = params[:user]
     @user.id = u[:id]
     @user.name = esc u[:name]
     @user.password = u[:password]
+
     if @user.save
+      logModAction session[:username], ":edit_users/save", "#{@user.name} edit success"
       flash[:success] = 'Successfully edited the user!'
       redirect(request.params[:next] ? request.params[:next] : '/user/list')
     else
+      logModAction session[:username], ":edit_users/save", "#{@user.name} edit save error"
       flash[:error] = 'Error saving the user!'
       redirect request.path_info
     end
+  
   else
+    logModAction session[:username], ":edit_users/save", "#{@user.name} edit fail"
     flash[:error] = 'No such user!'
     redirect request.path_info
   end
+
 end
 
 post '/user/:id/delete', :auth => [:edit_users] do
@@ -654,7 +698,7 @@ post '/upvote/:id', :auth => [:can_vote] do
           redirect '/quotes/'
         end
       else
-        puts "failed to update upvote count, but vote object still remains!"
+        $stderr.puts "warn: failed to update upvote count, but vote object still remains!" if $DEBUG
       end
     else
       if request.xhr?
