@@ -4,13 +4,18 @@
   <div class="metadata-bar">
     <div title="Upvotes" class="upvotes <%= (@loggedIn && @voted) ? 'voted' : '' %> <%= (@loggedIn && @userFlags.include?(:can_vote)) ? 'can_vote' : '' %>">&and; <%= @quote.upvotes || 0 %></div> /
     <div title="Quote ID" class="id"><a href="/quote/<%=@quote.id%>">#<%= @quote.id %></a></div>
+    <% if @isQuotePage %>
+    <div title="Posted By" class="author">by <%= @quote.author %></div>
     <% if @loggedIn %>
     <%    if @userFlags.include?(:edit_quotes) %>
-    / <a href="/quote/<%= @quote.id %>/edit">edit</a>
+    / <a title="Edit Quote" href="/quote/<%= @quote.id %>/edit">edit</a>
     <%    end %>
     <%    if @userFlags.include?(:delete_quotes) %>
-    / <a href="/quote/<%= @quote.id %>/delete">delete</a>
+    / <a title="Delete Quote" href="/quote/<%= @quote.id %>/delete">delete</a>
     <%    end %>
+    <% end %>
+    / <div title="Created At" class="posted">created <%= @quote.created_at.strftime("%d %b %Y") %> 
+    / updated <%= @quote.updated_at.strftime("%d %b %Y")%></div>
     <% end %>
   </div>
 </div>
