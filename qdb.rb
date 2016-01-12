@@ -352,7 +352,9 @@ post '/user/register' do
     break
   end
 
-  params[:user][:flags] = 0
+  # Unprivileged users can post quotes to the queue and vote automatically.
+  # CAPTCHA and low publicity keeps bots away :D
+  params[:user][:flags] = settings.auth_flags[:post_quotes] | settings.auth_flags[:can_vote]
   params[:user][:password] = BCrypt::Password.create(params[:user][:password])
 
   # username checking is now in models/User
