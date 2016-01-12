@@ -10,6 +10,11 @@ textarea.actual-quote {
   min-height: 300px;
 }
 
+.quote {
+  padding: 7px;
+  margin-bottom: 10px;
+}
+
 
 // List Users UI
 .users .user > .name, .users .user > .flags, .users .user > .id {
@@ -93,4 +98,8 @@ textarea.actual-quote {
 .pagination .current {
   font-style: normal;
   font-weight: bold;
+}
+
+body .well, .container .well {
+  padding: 7px;
 }

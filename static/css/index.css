@@ -4,11 +4,16 @@
   src: url("VeraMono/VeraMono-webfont.eot?#iefix") format("embedded-opentype"), url("VeraMono/VeraMono-webfont.woff") format("woff"), url("VeraMono/VeraMono-webfont.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
+
 textarea.actual-quote {
   display: block;
   width: 100%;
   resize: vertical;
   min-height: 300px; }
+
+.quote {
+  padding: 7px;
+  margin-bottom: 10px; }
 
 .users .user > .name, .users .user > .flags, .users .user > .id {
   font-weight: bold; }
@@ -16,20 +21,25 @@ textarea.actual-quote {
 .metadata-bar div {
   display: inline-block;
   padding: 2px; }
+
 .metadata-bar .upvotes {
   color: #17BD51;
   cursor: pointer; }
+
 .metadata-bar .upvotes:hover {
   border-radius: 2px;
   color: #23e466;
   text-decoration: underline; }
+
 .metadata-bar .downvotes {
   color: #E31B1B;
   cursor: pointer; }
+
 .metadata-bar .downvotes:hover {
   border-radius: 2px;
   color: #e94848;
   text-decoration: underline; }
+
 .metadata-bar .voted {
   font-weight: bold; }
 
@@ -68,4 +78,5 @@ textarea.actual-quote {
   font-style: normal;
   font-weight: bold; }
 
-/*# sourceMappingURL=index.css.map */
+body .well, .container .well {
+  padding: 7px; }
