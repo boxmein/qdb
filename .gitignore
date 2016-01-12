@@ -17,3 +17,7 @@ static/css/.sass-cache
 
 # Foreman local environment config
 .env
+
+# Your environment variables for this site
+environment_variables
+env.sh
