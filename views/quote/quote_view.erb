@@ -2,8 +2,20 @@
   <div class="actual-quote"><%= @quote.quote %></div>
 
   <div class="metadata-bar">
-    <div title="Upvotes" class="upvotes <%= (@loggedIn && @voted) ? 'voted' : '' %> <%= (@loggedIn && @userFlags.include?(:can_vote)) ? 'can_vote' : '' %>">&and; <%= @quote.upvotes || 0 %></div> /
-    <div title="Quote ID" class="id"><a href="/quote/<%=@quote.id%>">#<%= @quote.id %></a></div>
+    <div title="Upvotes" class="upvotes <%= (@loggedIn && @voted) ? 'voted' : '' %> 
+        <%= (@loggedIn && @userFlags.include?(:can_vote)) ? 'can_vote' : '' %>">
+        &and; 
+        <%= @quote.upvotes || 0 %>
+    </div> /
+    
+    <div title="Quote ID" class="id">
+        <a href="/quote/<%=@quote.id%>">#<%= @quote.id %></a>
+    </div>
+
+    <% if @loggedIn && @quote.author == @loggedInUser && !@quote.approved%>
+    / unapproved
+    <% end %>
+    
     <% if @isQuotePage %>
     <div title="Posted By" class="author">by <%= @quote.author %></div>
     <% if @loggedIn %>
