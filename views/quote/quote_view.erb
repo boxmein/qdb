@@ -18,16 +18,17 @@
     
     <% if @isQuotePage %>
     <div title="Posted By" class="author">by <%= @quote.author %></div>
-    <% if @loggedIn %>
-    <%    if @userFlags.include?(:edit_quotes) %>
+    <%      if @loggedIn %>
+    <%          if @userFlags.include?(:edit_quotes) %>
     / <a title="Edit Quote" href="/quote/<%= @quote.id %>/edit">edit</a>
-    <%    end %>
-    <%    if @userFlags.include?(:delete_quotes) %>
+    <%          end %>
+    <%          if @userFlags.include?(:delete_quotes) %>
     / <a title="Delete Quote" href="/quote/<%= @quote.id %>/delete">delete</a>
-    <%    end %>
-    <% end %>
-    / <div title="Created At" class="posted">created <%= @quote.created_at.strftime("%d %b %Y") %> 
-    / updated <%= @quote.updated_at.strftime("%d %b %Y")%></div>
+    <%          end %>
+    <%      end %>
+    / <div title="Created At" class="posted">
+        posted on <%= @quote.created_at.strftime("%d %b %Y") %>
+      </div>
     <% end %>
   </div>
 </div>
