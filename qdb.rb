@@ -243,22 +243,45 @@ get '/quotes/:sort_by' do
   }
 
   page = params[:page] == 0 ? 1 : params[:page]
-  
-  sort_by = params[:sort_by].to_sym
 
-  if possible_orders.include? sort_by
-    sort_by = possible_orders[sort_by]
-  else
-    sort_by = possible_orders[:old]
+  where_hash = {:approved => true}
+  @pageTitle = "quotes - page #{params[:page]}"
+
+  # Get all quotes by a specific user, show unapproved quotes too if author listing
+  if params[:by]
+    params[:by] = session[:username] if params[:by] == 'me'
+    @user = User.where(name: params[:by]).first
+    if @user 
+      where_hash[:author] = @user.name
+      if @loggedIn and session[:username] == params[:by]
+        where_hash.delete :approved
+      end
+      @pageTitle = "quotes by #{@user.name} - page #{params[:page]}"
+    else
+      flash[:error] = 'There is no such user!'
+    end
+  end
+
+  if params[:sort_by]
+    sort_by = params[:sort_by].to_sym
+
+    if possible_orders.include? sort_by
+      sort_by = possible_orders[sort_by]
+    else
+      sort_by = possible_orders[:old]
+    end
   end
 
   puts "Received #{params[:sort_by].inspect}, sorting by #{sort_by.inspect}!" if $DEBUG
 
-  @quotes = Quote.where(:approved => true).order(sort_by).page(params[:page])
+  @quotes = Quote.where(where_hash).order(sort_by).page(params[:page])
 
-  user = User.where(name: session[:username]).first
-  @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
-  @pageTitle = "quotes - page #{params[:page]}"
+  if @loggedIn
+    user = User.where(name: session[:username]).first
+    @loggedInUser = user.name
+    @votedQuotes = Vote.where(user: user).to_a.map(&:quote_id)
+  end
+
   erb :'quote/list'
 end
 
