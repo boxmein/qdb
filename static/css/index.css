@@ -9,7 +9,10 @@ textarea.actual-quote {
   display: block;
   width: 100%;
   resize: vertical;
-  min-height: 300px; }
+  min-height: 300px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  overflow: hidden; }
 
 .quote {
   padding: 7px;

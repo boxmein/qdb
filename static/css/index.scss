@@ -8,6 +8,9 @@ textarea.actual-quote {
   resize: vertical;
 
   min-height: 300px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 .quote {
