@@ -38,6 +38,9 @@
               <li><a href="/quotes/old">oldest</a></li>
               <li><a href="/quotes/voted">best voted</a></li>
               <li><a href="/quotes/new">new</a></li>
+              <% if @loggedIn %>
+                <li><a href="/quotes/new?by=me">by me</a></li>
+              <% end %>
             </ul>
         </ul>
 
