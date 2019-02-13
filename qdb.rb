@@ -286,15 +286,15 @@ get '/quotes/:sort_by' do
 end
 
 get '/quote' do
-  redirect '/quotes/old'
+  redirect '/quotes/new'
 end
 
 get '/quotes' do
-  redirect '/quotes/old'
+  redirect '/quotes/new'
 end
 
 get '/quotes/' do 
-  redirect '/quotes/old'
+  redirect '/quotes/new'
 end
 
 #
