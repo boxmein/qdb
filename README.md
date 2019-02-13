@@ -1,6 +1,8 @@
 # qdb #
 
-Quote Database Engine in Ruby / Sinatra.
+Quote Database written in Ruby / Sinatra.
+
+[Live](https://pacific-island-8492.herokuapp.com)
 
 ## Features
 
@@ -20,7 +22,7 @@ Quote Database Engine in Ruby / Sinatra.
 
 ## Running locally
 
-**You need to have:** a PostgreSQL server, Ruby ~1.9.1, `ruby-dev` (to be able to install a few modules) and
+**You need to have:** a PostgreSQL server, Ruby 2.4, `ruby-dev` (to be able to install a few modules) and
 Bundler for the rubygem dependencies.1
 
 **TL;DR*** with Heroku Toolbelt:
@@ -39,7 +41,8 @@ Bundler for the rubygem dependencies.1
     -- and then pick one from the following: --
     $ ruby qdb.rb 
     $ bundle exec rackup config.ru
-    
+
+
 ### Environment variables
 
 Before actually running the code, you should set up a few environment variables.
@@ -102,6 +105,9 @@ Alternatively, set the same environment variables in a manner of your choosing
 ## Running on Heroku
 
 Running this repo on Heroku is too easy.
+
+This repository (boxmein/qdb) has been configured to autodeploy the master branch
+into Heroku.
 
 
 ### Preparing Heroku

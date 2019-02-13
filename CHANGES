@@ -1,5 +1,12 @@
 # Changelog #
 
+## Version 1.0.3 ##
+
+* Set up CI
+* Set up Heroku autodeployment on master branch
+
+These changes will make this repository easier to maintain.
+
 ## Version 1.0.2 ##
 
 * Lots of XSS fixes, holy crap
