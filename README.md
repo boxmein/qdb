@@ -2,8 +2,6 @@
 
 Quote Database written in Ruby / Sinatra.
 
-[Live](https://pacific-island-8492.herokuapp.com)
-
 ## Features
 
 - User accounts with complex permissions
@@ -17,7 +15,7 @@ Quote Database written in Ruby / Sinatra.
 - TODO: Dynamic reloading and stuff
 - TODO: decent stylesheets and class tags for configurable themes
 - TODO: Make everything configurable
-- TODO: Different types of quote sorting
+- Different types of quote sorting
 - TODO: Public moderation logs
 
 ## Running locally
@@ -25,14 +23,8 @@ Quote Database written in Ruby / Sinatra.
 **You need to have:** a PostgreSQL server, Ruby 2.4, `ruby-dev` (to be able to install a few modules) and
 Bundler for the rubygem dependencies.1
 
-**TL;DR*** with Heroku Toolbelt:
 
-    $ vim environment_variables
-    $ cp environment_variables .env
-    $ rake db:schema:load
-    $ foreman start web 
-
-**TL;DR** without Heroku Toolbelt:
+**TL;DR**:
 
     $ vim environment_variables
     $ cat environment_variables | sed "s/^/export /g" > env.sh
@@ -93,75 +85,17 @@ After that, feel free to do `rake db:schema:load` to get your database in order.
 
 ### Actually Running
 
-If you're using Heroku, copy-paste the file `environment_variables` into `.env`
-which will then let you run the app locally using `foreman start web`.
-
-Alternatively, set the same environment variables in a manner of your choosing
-(for example, via `~/.bash_profile` or `export` commands) and run 
-`bundle exec rackup config.ru` or `ruby qdb.rb`, whichever one you like more.
-
-
-
-## Running on Heroku
-
-Running this repo on Heroku is too easy.
-
-This repository (boxmein/qdb) has been configured to autodeploy the master branch
-into Heroku.
-
-
-### Preparing Heroku
-
-First, start up by creating a Heroku app for this:
-
-    $ heroku create
-
-If you have an existing app, use this:
-
-    $ heroku git:remote -a my-appname-1337
-
-
-### Setting up the environment
-
-Set up the environment variables named like in the file `environment_variables`.
-
-The variables are described in an earlier section.
-
-The next section describes how to push the code to Heroku. Make sure to pay very
-close attention because it migth be a bit long-winded.
-
-
-### Pushing the code
-
-    $ git push heroku master
-
-Don't forget to run a database schema load too:
-
-    $ heroku run rake db:schema:load
-
-(Note: every time you modify the database via a rake migration, you must `rake db:migrate` the remote end too!) 
-
-And, after all this toil and trouble, your app is running on Heroku! Try the 
-following command to open a browser with the app deployed.
-
-    $ heroku open
-
-
-
+1. Define the above env variables
+2. Run `ruby qdb.rb`
 
 ## Dev environment
 
 Here's a quick dev environment: run `vagrant up`. It will setup an Ubuntu 14.04
-VM with the required packages, tools as well as the Heroku Toolbelt installed.
-
-
-
+VM with the required packages.
 
 ## Contributing
 
 Send a pull request, yo
-
-
 
 ## Credit
 
